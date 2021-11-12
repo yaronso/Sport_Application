@@ -1,0 +1,71 @@
+Implemented:
+
+SELECT distinct t1.game_name, t1.user_name, t1.sport_category, t2.country, t2.city, t3.game_date, t3.players, t3.level
+         FROM user_games as t1
+         JOIN game_region as t2
+         ON t1.game_name = t2.game_name
+         JOIN game_details as t3
+         ON t2.game_name = t3.game_name
+         ORDER BY unix_timestamp(t3.game_date)
+         WHERE t1.game_name= ?;
+
+
+
+SELECT distinct t1.game_name, t1.user_name, t1.sport_category, t2.country, t2.city, t3.game_date, t3.players, t3.level
+         FROM user_games as t1
+         JOIN game_region as t2
+         ON t1.game_name = t2.game_name
+         JOIN game_details as t3
+         ON t2.game_name = t3.game_name
+         where t3.level <= ? and t1.sport_category = ? and t3.players <= ?;
+
+
+# MAX Level
+SELECT distinct t1.game_name, t1.user_name, t1.sport_category, t2.country, t2.city, t3.game_date, t3.players, max(t3.level)
+         FROM user_games as t1
+         JOIN game_region as t2
+         ON t1.game_name = t2.game_name
+         JOIN game_details as t3
+         ON t2.game_name = t3.game_name;
+
+
+
+# Get the max level game in each sport category order by date time (fix the football)
+SELECT distinct t1.game_name, t1.user_name, t1.sport_category, t2.country, t2.city, t3.game_date, t3.players, t3.level AS max_level
+				FROM user_games as t1
+				JOIN game_region as t2
+				ON t1.game_name = t2.game_name
+				JOIN game_details as t3
+				ON t2.game_name = t3.game_name
+
+                WHERE level = (SELECT max(game_details.level)
+								FROM game_details
+							    GROUP BY t1.sport_category)
+
+				GROUP BY t1.sport_category, t3.level
+                ORDER BY unix_timestamp(t3.game_date);
+
+Not Yet:
+
+SELECT distinct t1.game_name, t1.user_name, t1.sport_category, t2.country, t2.city, t3.game_date, t3.players, t3.level
+         FROM user_games as t1
+         JOIN game_region as t2
+         ON t1.game_name = t2.game_name
+         JOIN game_details as t3
+         ON t2.game_name = t3.game_name
+         where t3.level <= 5 and t3.players <= 5
+         group by t3.game_date;
+
+
+
+# המדינה שבה משחקים הכי הרבה כדורסל היא:  The country where basketball is played the most is
+SELECT  distinct  t2.country
+         FROM user_games as t1
+         JOIN game_region as t2
+         ON t1.game_name = t2.game_name
+         JOIN game_details as t3
+         ON t2.game_name = t3.game_name
+         WHERE t1.sport_category ='Basketball'
+         GROUP BY t2.country
+         ORDER BY COUNT(*) DESC
+         LIMIT 1;
