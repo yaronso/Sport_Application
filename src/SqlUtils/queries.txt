@@ -45,16 +45,8 @@ SELECT distinct t1.game_name, t1.user_name, t1.sport_category, t2.country, t2.ci
 				GROUP BY t1.sport_category, t3.level
                 ORDER BY unix_timestamp(t3.game_date);
 
-Not Yet:
 
-SELECT distinct t1.game_name, t1.user_name, t1.sport_category, t2.country, t2.city, t3.game_date, t3.players, t3.level
-         FROM user_games as t1
-         JOIN game_region as t2
-         ON t1.game_name = t2.game_name
-         JOIN game_details as t3
-         ON t2.game_name = t3.game_name
-         where t3.level <= 5 and t3.players <= 5
-         group by t3.game_date;
+
 
 
 

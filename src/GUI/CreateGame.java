@@ -137,10 +137,10 @@ public class CreateGame extends JFrame{
 
                 Game game = new Game(gameNameText, sportCategoryText, countryText, cityText, dateText, Integer.parseInt(numOfPlayersText), Integer.parseInt(levelOfPlayersText));
                 gameList.add(String.valueOf(game));
-                int rcUserGames = gameDao.insertUserGames(game, userName);
-                int rcGameRegion = gameDao.insertGameRegion(game);
-                int rcGameDetails = gameDao.insertGameDetails(game);
-                checkGameCreation(rcUserGames, rcGameRegion, rcGameDetails, gameNameText);
+                //int rcUserGames = gameDao.insertUserGames(game, userName);
+                //int rcGameRegion = gameDao.insertGameRegion(game);
+                //int rcGameDetails = gameDao.insertGameDetails(game);
+                //checkGameCreation(rcUserGames, rcGameRegion, rcGameDetails, gameNameText);
             }
         });
         btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 22));

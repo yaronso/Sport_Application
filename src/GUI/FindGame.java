@@ -48,7 +48,7 @@ public class FindGame extends JFrame {
         jLabelGameName.setText("Find Game according game name:");
         jLabelFindGamesInCity.setText("Find All Games in city:");
         jLabelFindGamesCountry.setText("Find All Games in country:");
-        jLabelFindGamesMaxLevel.setText("Find All Games with max level:");
+        jLabelFindGamesMaxLevel.setText("Find All Games with max level Under Sport Category:");
         jLabelMostPlayedSportInCountryPref.setText("The country where");
         jLabelMostPlayedSportInCountrySuff.setText("is most played is");
 

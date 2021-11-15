@@ -17,10 +17,8 @@ public interface GameDao {
     public DefaultTableModel findByCountryName(String countryName);
     public DefaultTableModel findMaxLevelGamesInEachCountry(String category);
     public DefaultTableModel findCountryMostPlayedSport(String sportCategory);
-    public int insertUserGames(Game game, String userName);
-    public int insertGameRegion(Game game);
-    public int insertGameDetails(Game game);
-    public int insertToMatchGameTable(String userName, String gameName, String gameDate);
+    public int insertGameDetails(String userName, Game game);
+    public int insertToMatchGameTable(String userName, String gameName, String creationDate, String participant);
     public boolean updateGameLevel(String gameName, int gameNumOfPlayers, String flag);
     public boolean updateGameFullDetails(Game game, String oldGame);
     public int getCurrNumPlayers(String gameName);

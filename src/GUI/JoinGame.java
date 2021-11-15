@@ -42,6 +42,7 @@ public class JoinGame extends JFrame {
         dateTxt = new JTextField();
         playersTxt = new JTextField();
         levelTxt = new JTextField();
+        creationDateTxt = new JTextField();
 
         // JLabels:
         jLabelGameName = new javax.swing.JLabel();
@@ -347,21 +348,21 @@ public class JoinGame extends JFrame {
     }// </editor-fold>
 
 
-    private void DeleteMatchActionPerformed(ActionEvent evt, String userName, GameDao gameDao, JTable matchGamesTable) {
+    private void DeleteMatchActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JTable matchGamesTable) {
         String[] options = {"Yes", "No"};
         int rs = JOptionPane.showOptionDialog(null, "Sure To Delete?", "Delete Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
         if (rs == 0) {
             int currRow = matchGamesTable.getSelectedRow();
             // The delete query can be only executed by the user who created the game
-            String gameName = matchGamesTable.getValueAt(currRow, 0).toString();
-            if (gameDao.deleteFromMatchGames(userName, gameName)) { /* if succeeded to delete from matches table */
+            String gameName = matchGamesTable.getValueAt(currRow, 1).toString();
+            if (gameDao.deleteFromMatchGames(participant, gameName)) { /* if succeeded to delete from matches table */
                 JOptionPane.showMessageDialog(null, "Deleted Updated");
-                retrieveMatches(gameDao, userName);
+                retrieveMatches(gameDao, participant);
                 // If the user deleted a match from his match tables, update the game level with ++1 at the game management table.
                 int currNumPlayers = gameDao.getCurrNumPlayers(gameName);
                 if(currNumPlayers != -1) { /* if succeeded to retrieve the current number of players */
                     if (gameDao.updateGameLevel(gameName, currNumPlayers, "UpLevel")) {
-                        retrieveMatches(gameDao, userName);
+                        retrieveMatches(gameDao, participant);
                     }
                     retrieve(gameDao);
                 }
@@ -372,8 +373,8 @@ public class JoinGame extends JFrame {
     }
 
     // Display the Match Games of the specific user
-    private void retrieveMatches(GameDao gameDao, String userName) {
-        DefaultTableModel dm = gameDao.findMatches(userName);
+    private void retrieveMatches(GameDao gameDao, String participant) {
+        DefaultTableModel dm = gameDao.findMatches(participant);
         matchGamesTable.setModel(dm);
     }
 
@@ -388,13 +389,18 @@ public class JoinGame extends JFrame {
 
 
     // When a user click to join a new game
-    private void joinGameBtnActionPerformed(ActionEvent evt, String userName, GameDao gameDao) {
+    // "INSERT IGNORE INTO match_games(user_name, game_name, creation_date, participant) VALUES(?, ?, ?, ?)";
+    private void joinGameBtnActionPerformed(ActionEvent evt, String participant, GameDao gameDao) {
         // TODO - add a check that the game does not exist in match
-        gameDao.insertToMatchGameTable(userName, gameNameTxt.getText(), dateTxt.getText());  // insert a record to match_games table
+        // SELECT user_name, creation_date FROM game_details WHERE game_name = gameNameTxt.getText()
+
+        String userName = jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString();
+        String creationDate = jTable1.getValueAt(jTable1.getSelectedRow(), 8).toString();
+        gameDao.insertToMatchGameTable(userName, gameNameTxt.getText(), creationDate, participant);  // insert a record to match_games table
         gameDao.updateGameLevel(gameNameTxt.getText(), Integer.parseInt(playersTxt.getText()) , "DownLevel"); // --1 the game number of players
         JOptionPane.showMessageDialog(null, "Successfully joined");
         retrieve(gameDao);
-        retrieveMatches(gameDao, userName);
+        retrieveMatches(gameDao, participant);
     }
 
     // Retrieve the game details
@@ -402,19 +408,19 @@ public class JoinGame extends JFrame {
         retrieve(gameDao);
     }
 
-    // Add a new game
+    // Add/Create a new game
     private void addBtnActionPerformed(ActionEvent evt, String userName, GameDao gameDao) {
         Game game = new Game(gameNameTxt.getText(), sportCategoryTxt.getText(), countryTxt.getText(), cityTxt.getText(), dateTxt.getText(), Integer.parseInt(playersTxt.getText()), Integer.parseInt(levelTxt.getText()));
-        gameDao.insertUserGames(game, userName);
-        gameDao.insertGameRegion(game);
-        gameDao.insertGameDetails(game);
+        //gameDao.insertUserGames(game, userName);
+        //gameDao.insertGameRegion(game);
+        gameDao.insertGameDetails(userName, game);
         retrieve(gameDao);
     }
 
 
     // Set the selected values to the relevant text fields of game management table
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {
-        String game = jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString();
+        String game = jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString();
         String sport = jTable1.getValueAt(jTable1.getSelectedRow(), 2).toString();
         String country = jTable1.getValueAt(jTable1.getSelectedRow(), 3).toString();
         String city = jTable1.getValueAt(jTable1.getSelectedRow(), 4).toString();
@@ -431,12 +437,12 @@ public class JoinGame extends JFrame {
     }
 
     // Execute update query for all the game tables
-    private void updateBtnActionPerformed(ActionEvent evt, String userName, GameDao gameDao, JTable jTable1) {
+    private void updateBtnActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JTable jTable1) {
         int currRow = jTable1.getSelectedRow();
-        String user_name = jTable1.getValueAt(currRow, 1).toString();
+        String userName = jTable1.getValueAt(currRow, 0).toString();
         // The update query can be only executed by the user who created the game
         // TODO - Check that the fields are not null
-        if (user_name.equals(userName)) {
+        if (userName.equals(participant)) {
             System.out.println("currRow selected is " + currRow);
             Game game = new Game(gameNameTxt.getText(), sportCategoryTxt.getText(), countryTxt.getText(), cityTxt.getText(), dateTxt.getText(), Integer.parseInt(playersTxt.getText()), Integer.parseInt(levelTxt.getText()));
             String oldGameName = gameDao.findColumnRow(currRow, "GameName"); // Cursor: The game that the user want to update/replace
@@ -456,15 +462,16 @@ public class JoinGame extends JFrame {
     }
 
     // Execute delete query
-    private void DeleteActionPerformed(ActionEvent evt, String userName, GameDao gameDao, JTable jTable) {
+    private void DeleteActionPerformed(ActionEvent evt, String currUser, GameDao gameDao, JTable jTable) {
         String[] options = {"Yes", "No"};
         int rs = JOptionPane.showOptionDialog(null, "Sure To Delete?", "Delete Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
         if (rs == 0) {
             int currRow = jTable.getSelectedRow();
-            String user_name = jTable.getValueAt(currRow, 1).toString();
+            String userName = jTable.getValueAt(currRow, 0).toString();
+            System.out.println(userName);
             // The delete query can be only executed by the user who created the game
-            if (user_name.equals(userName)) {
-                String gameName = jTable.getValueAt(currRow, 0).toString();
+            if (userName.equals(currUser)) {
+                String gameName = jTable.getValueAt(currRow, 1).toString();
                 if (gameDao.deleteGame(gameName)) {
                     JOptionPane.showMessageDialog(null, "Deleted Updated");
                     gameNameTxt.setText("");
@@ -522,6 +529,7 @@ public class JoinGame extends JFrame {
     private javax.swing.JTextField dateTxt;
     private javax.swing.JTextField playersTxt;
     private javax.swing.JTextField levelTxt;
+    private javax.swing.JTextField creationDateTxt;
 
     // Buttons declarations:
     private javax.swing.JButton retrieveBtn;

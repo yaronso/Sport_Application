@@ -21,7 +21,7 @@ public class Database implements IDataBase {
     private static final String DB_NAME = "yaron_db";
     private static final String CREATE_DB = "src/SqlUtils/createDB.sql";
     private static final String CREATE_USERS = "src/SqlUtils/createUsersTable.sql";
-    private static final String CREATE_GAME_TABLES = "src/SqlUtils/createGamesTables.sql";
+    private static final String CREATE_GAME_TABLES = "src/SqlUtils/newCreateGamesTables.sql";
 
 
     // TODO - Add singleton design pattern
