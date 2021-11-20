@@ -2,25 +2,19 @@ package GUI;
 
 import Dao.GameDao;
 import Dao.GameDaoImpl;
-import Models.Game;
-
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
+import java.io.IOException;
+import java.sql.SQLException;
 
 public class FindGame extends JFrame {
     private static final long serialVersionUID = 1L;
 
-    public FindGame(Connection connection)
-    {
-        Init(connection);
+    public FindGame() throws IOException {
+        Init();
     }
 
-    public void Init(Connection connection) {
+    public void Init() throws IOException {
         // Initialization Objects:
         GameDao gameDao = new GameDaoImpl();
         jPanel1 = new javax.swing.JPanel();
@@ -34,7 +28,6 @@ public class FindGame extends JFrame {
         countryTxt = new javax.swing.JTextField();
         findMaxLevelTxt = new JTextField();
         countryMostPlayedText = new JTextField();
-
 
         // JLabels:
         jLabelTitle = new javax.swing.JLabel();
@@ -52,7 +45,6 @@ public class FindGame extends JFrame {
         jLabelMostPlayedSportInCountryPref.setText("The country where");
         jLabelMostPlayedSportInCountrySuff.setText("is most played is");
 
-
         // JButtons:
         clearBtn = new JButton();
         findAccGameNameBtn = new JButton();
@@ -60,7 +52,6 @@ public class FindGame extends JFrame {
         findCountryBtn = new JButton();
         findMaxLevelBtn = new JButton();
         countryMostPlayedBtn = new JButton();
-
 
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -78,7 +69,12 @@ public class FindGame extends JFrame {
         findAccGameNameBtn.setText("Find game");
         findAccGameNameBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DefaultTableModel dm = gameDao.findByGameName(gameNameTxt.getText());
+                DefaultTableModel dm = null;
+                try {
+                    dm = gameDao.findByGameName(gameNameTxt.getText());
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
                 jTable1.setModel(dm);
                 setViewTable();
             }
@@ -87,7 +83,12 @@ public class FindGame extends JFrame {
         findCityBtn.setText("Find All Cities");
         findCityBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DefaultTableModel dm = gameDao.findByCityName(findGameCityTxt.getText());
+                DefaultTableModel dm = null;
+                try {
+                    dm = gameDao.findByCityName(findGameCityTxt.getText());
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
                 jTable1.setModel(dm);
                 setViewTable();
             }
@@ -307,14 +308,12 @@ public class FindGame extends JFrame {
     JLabel jLabelMostPlayedSportInCountryPref;
     JLabel jLabelMostPlayedSportInCountrySuff;
 
-
     // Text Fields declarations:
     JTextField gameNameTxt;
     JTextField findGameCityTxt;
     JTextField countryTxt;
     JTextField findMaxLevelTxt;
     JTextField countryMostPlayedText;
-
 
     // Buttons declarations:
     JButton clearBtn;
@@ -323,7 +322,6 @@ public class FindGame extends JFrame {
     JButton findCountryBtn;
     JButton findMaxLevelBtn;
     JButton countryMostPlayedBtn;
-
 
     // etc
     JPanel jPanel1;

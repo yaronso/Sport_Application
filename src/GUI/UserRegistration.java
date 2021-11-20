@@ -6,6 +6,9 @@ import Models.User;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -34,7 +37,7 @@ public class UserRegistration extends JFrame {
     /**
      * Create the register frame.
      */
-    public UserRegistration() {
+    public UserRegistration() throws IOException {
         UserDao userDao = new UserDaoImpl();
         List userList = new List();
         setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\User\\Desktop\\STDM.jpg"));
@@ -130,16 +133,18 @@ public class UserRegistration extends JFrame {
                 String mobileNumber = mob.getText();
                 int len = mobileNumber.length();
                 String password = passwordField.getText();
-
                 if (len != 10) {
                     JOptionPane.showMessageDialog(btnNewButton, "Enter a valid mobile number");
                     return;
                 }
-
                 User user = new User(firstName, lastName, userName, password, emailId, mobileNumber);
                 userList.add(String.valueOf(user));
                 // Insert the new input user to the DataBase
-                rc = userDao.insert(user);
+                try {
+                    rc = userDao.insert(user);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
                 insertRegisteredUser(rc, firstName);
             }
         });

@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -29,7 +30,7 @@ public class ChangePassword extends JFrame {
     /**
      * Create ChangePassword frame.
      */
-    public ChangePassword(String userName, Connection connection) {
+    public ChangePassword(String userName) throws IOException {
         UserDao userDao = new UserDaoImpl();
         setBounds(450, 360, 1024, 234);
         setResizable(false);

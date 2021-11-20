@@ -2,15 +2,12 @@ package GUI;
 
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-
+import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -20,13 +17,10 @@ public class UserHome extends JFrame {
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
 
-
-    public UserHome() {}
-
     /**
      * Create the UserHome frame.
      */
-    public UserHome(String userName, Connection connection) {
+    public UserHome(String userName) {
         // TODO - ADD a button that move the user inside the application
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 1014, 597);
@@ -43,7 +37,12 @@ public class UserHome extends JFrame {
         btnNewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                FindGame findGame = new FindGame(connection);
+                FindGame findGame = null;
+                try {
+                    findGame = new FindGame();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
                 findGame.setVisible(true);
             }
         });
@@ -58,7 +57,12 @@ public class UserHome extends JFrame {
         btnJoinGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JoinGame joinGame = new JoinGame(userName);
+                JoinGame joinGame = null;
+                try {
+                    joinGame = new JoinGame(userName);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
                 joinGame.setVisible(true);
             }
         });
@@ -70,7 +74,12 @@ public class UserHome extends JFrame {
         button.setBackground(UIManager.getColor("Button.disabledForeground"));
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ChangePassword bo = new ChangePassword(userName, connection);
+                ChangePassword bo = null;
+                try {
+                    bo = new ChangePassword(userName);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
                 bo.setTitle("Change Password");
                 bo.setVisible(true);
 

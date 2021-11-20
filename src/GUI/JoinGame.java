@@ -5,26 +5,27 @@ import Dao.GameDaoImpl;
 import Models.Game;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.sql.SQLException;
 
 public class JoinGame extends JFrame {
 
     // CTR - invoke init Components method
-    public JoinGame(String userName) {
+    public JoinGame(String userName) throws IOException {
         initComponents(userName);
     }
 
     // Retrieve the games table to the application screen
-    private void retrieve(GameDao gameDao) {
+    private void retrieve(GameDao gameDao) throws SQLException {
         DefaultTableModel dm = gameDao.findAllGames();
         jTable1.setModel(dm);
     }
 
     @SuppressWarnings("unchecked")
-    private void initComponents(String userName) {
+    private void initComponents(String userName) throws IOException {
         // Initialization Objects:
         GameDao gameDao = new GameDaoImpl();
         jPanel1 = new javax.swing.JPanel();
@@ -107,7 +108,11 @@ public class JoinGame extends JFrame {
         retrieveBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
-                retrieveBtnActionPerformed(evt, gameDao);
+                try {
+                    retrieveBtnActionPerformed(evt, gameDao);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
 
@@ -115,7 +120,11 @@ public class JoinGame extends JFrame {
         addBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
-                addBtnActionPerformed(evt, userName, gameDao);
+                try {
+                    addBtnActionPerformed(evt, userName, gameDao);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
 
@@ -123,7 +132,11 @@ public class JoinGame extends JFrame {
         updateBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
-                updateBtnActionPerformed(evt, userName, gameDao, jTable1);
+                try {
+                    updateBtnActionPerformed(evt, userName, gameDao, jTable1);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
 
@@ -131,7 +144,11 @@ public class JoinGame extends JFrame {
         Delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
-                DeleteActionPerformed(evt, userName, gameDao, jTable1);
+                try {
+                    DeleteActionPerformed(evt, userName, gameDao, jTable1);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
 
@@ -139,7 +156,11 @@ public class JoinGame extends JFrame {
         deleteMatch.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 setViewTable(jScrollPaneMatchGames, matchGamesTable);
-                DeleteMatchActionPerformed(evt, userName, gameDao, matchGamesTable);
+                try {
+                    DeleteMatchActionPerformed(evt, userName, gameDao, matchGamesTable);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
 
@@ -155,7 +176,11 @@ public class JoinGame extends JFrame {
         joinGameButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
-                joinGameBtnActionPerformed(evt, userName, gameDao);
+                try {
+                    joinGameBtnActionPerformed(evt, userName, gameDao);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
 
@@ -163,7 +188,11 @@ public class JoinGame extends JFrame {
         showMyGames.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 setViewTable(jScrollPaneMatchGames, matchGamesTable);
-                retrieveMatches(gameDao, userName);
+                try {
+                    retrieveMatches(gameDao, userName);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
         });
 
@@ -348,7 +377,7 @@ public class JoinGame extends JFrame {
     }// </editor-fold>
 
 
-    private void DeleteMatchActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JTable matchGamesTable) {
+    private void DeleteMatchActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JTable matchGamesTable) throws SQLException {
         String[] options = {"Yes", "No"};
         int rs = JOptionPane.showOptionDialog(null, "Sure To Delete?", "Delete Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
         if (rs == 0) {
@@ -373,7 +402,7 @@ public class JoinGame extends JFrame {
     }
 
     // Display the Match Games of the specific user
-    private void retrieveMatches(GameDao gameDao, String participant) {
+    private void retrieveMatches(GameDao gameDao, String participant) throws SQLException {
         DefaultTableModel dm = gameDao.findMatches(participant);
         matchGamesTable.setModel(dm);
     }
@@ -390,10 +419,9 @@ public class JoinGame extends JFrame {
 
     // When a user click to join a new game
     // "INSERT IGNORE INTO match_games(user_name, game_name, creation_date, participant) VALUES(?, ?, ?, ?)";
-    private void joinGameBtnActionPerformed(ActionEvent evt, String participant, GameDao gameDao) {
+    private void joinGameBtnActionPerformed(ActionEvent evt, String participant, GameDao gameDao) throws SQLException {
         // TODO - add a check that the game does not exist in match
         // SELECT user_name, creation_date FROM game_details WHERE game_name = gameNameTxt.getText()
-
         String userName = jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString();
         String creationDate = jTable1.getValueAt(jTable1.getSelectedRow(), 8).toString();
         gameDao.insertToMatchGameTable(userName, gameNameTxt.getText(), creationDate, participant);  // insert a record to match_games table
@@ -404,12 +432,12 @@ public class JoinGame extends JFrame {
     }
 
     // Retrieve the game details
-    private void retrieveBtnActionPerformed(ActionEvent evt, GameDao gameDao) {
+    private void retrieveBtnActionPerformed(ActionEvent evt, GameDao gameDao) throws SQLException {
         retrieve(gameDao);
     }
 
     // Add/Create a new game
-    private void addBtnActionPerformed(ActionEvent evt, String userName, GameDao gameDao) {
+    private void addBtnActionPerformed(ActionEvent evt, String userName, GameDao gameDao) throws SQLException {
         Game game = new Game(gameNameTxt.getText(), sportCategoryTxt.getText(), countryTxt.getText(), cityTxt.getText(), dateTxt.getText(), Integer.parseInt(playersTxt.getText()), Integer.parseInt(levelTxt.getText()));
         //gameDao.insertUserGames(game, userName);
         //gameDao.insertGameRegion(game);
@@ -437,7 +465,7 @@ public class JoinGame extends JFrame {
     }
 
     // Execute update query for all the game tables
-    private void updateBtnActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JTable jTable1) {
+    private void updateBtnActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JTable jTable1) throws SQLException {
         int currRow = jTable1.getSelectedRow();
         String userName = jTable1.getValueAt(currRow, 0).toString();
         // The update query can be only executed by the user who created the game
@@ -462,7 +490,7 @@ public class JoinGame extends JFrame {
     }
 
     // Execute delete query
-    private void DeleteActionPerformed(ActionEvent evt, String currUser, GameDao gameDao, JTable jTable) {
+    private void DeleteActionPerformed(ActionEvent evt, String currUser, GameDao gameDao, JTable jTable) throws SQLException {
         String[] options = {"Yes", "No"};
         int rs = JOptionPane.showOptionDialog(null, "Sure To Delete?", "Delete Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
         if (rs == 0) {

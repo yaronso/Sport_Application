@@ -13,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.Connection;
 
 public class CreateGame extends JFrame{
@@ -27,7 +28,7 @@ public class CreateGame extends JFrame{
     private JTextField levelOfPlayers;
     private JButton btnNewButton;
 
-    public CreateGame(Connection connection, String userName, JTable jTable) {
+    public CreateGame(Connection connection, String userName, JTable jTable) throws IOException {
         GameDao gameDao = new GameDaoImpl();
         List gameList = new List();
         setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\User\\Desktop\\STDM.jpg"));

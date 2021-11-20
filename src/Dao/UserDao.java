@@ -1,9 +1,12 @@
 package Dao;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 import Models.User;
 
 
 public interface UserDao {
-    public int insert(User user);
-    public int updateChangePass(String pstr, String userName);
+    int insert(User user) throws SQLException;
+    boolean userLogin(String userName, String password) throws SQLException;
+    int updateChangePass(String pstr, String userName);
 }

@@ -2,18 +2,20 @@ package Dao;
 
 import Models.Game;
 import javax.swing.table.DefaultTableModel;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Properties;
 
 
 public class GameDaoImpl implements GameDao {
-    // MySql Connection Details:
-    private static final String DRIVER_NAME = "com.mysql.cj.jdbc.Driver";
-    private static final String DB_URL = "jdbc:mysql://localhost/yaron_db";
-    private static final String ID = "root";
-    private static final String PASS = "ArchiveYsso6495";
-
+    // Fields:
+    private final String DB_DRIVER;
+    private final String DB_URL;
+    private final String DB_USER;
+    private final String DB_PASSWORD;
     // Sql Queries:
     // Insert statements:
     private static final String INSERT_GAME_DETAILS = "INSERT INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
@@ -104,48 +106,68 @@ public class GameDaoImpl implements GameDao {
                                                         "players = ?, level =? WHERE game_name = ?";
 
 
+    public GameDaoImpl() throws IOException {
+        String[] propertiesArray = getJDBCProperties();
+        DB_DRIVER = propertiesArray[0];
+        DB_URL = propertiesArray[1];
+        DB_USER = propertiesArray[2];
+        DB_PASSWORD = propertiesArray[3];
+    }
+
 
     @Override
     public Connection getConnection() {
         try {
-            Class.forName(DRIVER_NAME);
-            return DriverManager.getConnection(DB_URL, ID, PASS);
+            Class.forName(DB_DRIVER);
+            return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
         } catch (Exception e) {
-            // e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
+    // DB Connection close.
     public static void close(Connection con) {
         if (con != null) {
             try {
                 con.close();
             } catch (SQLException e) {
-                // e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }
     }
 
+    // Query Statement close
     public static void close(Statement stmt) {
         if (stmt != null) {
             try {
                 stmt.close();
             } catch (SQLException e) {
-                // e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }
     }
 
+    public String[] getJDBCProperties() throws IOException {
+        String[] propertiesArray = new String[5];
+        Properties props = new Properties();
+        String dbSettingsPropertyFile = "src/Config/jdbc.properties";
+        FileReader fReader = new FileReader(dbSettingsPropertyFile);
+        props.load(fReader);
+        propertiesArray[0] = props.getProperty("db.driver.class");
+        propertiesArray[1] = props.getProperty("db.conn.url");
+        propertiesArray[2] = props.getProperty("db.username");
+        propertiesArray[3] = props.getProperty("db.password");
+        return propertiesArray;
+    }
+
     @Override
     public Boolean deleteFromMatchGames(String participant, String gameName) {
-        Connection conn = null;
+        Connection connection = null;
         PreparedStatement deleteStmt = null;
         try {
-            conn = getConnection();
             // DELETE_FROM_MATCH_TABLE = "DELETE FROM match_games WHERE participant=? AND game_name= ?";
-            deleteStmt = conn.prepareStatement(DELETE_FROM_MATCH_TABLE);
+            connection = getConnection();
+            deleteStmt = connection.prepareStatement(DELETE_FROM_MATCH_TABLE);
             deleteStmt.setString(1, participant);
             deleteStmt.setString(2, gameName);
             System.out.println(deleteStmt);
@@ -155,29 +177,29 @@ public class GameDaoImpl implements GameDao {
             throwables.printStackTrace();
             return false;
         } finally {
-            close(conn);
+            close(connection);
             close(deleteStmt);
         }
     }
 
     @Override
     public Boolean deleteGame(String gameName) {
-        Connection conn = null;
+        Connection connection = null;
         PreparedStatement foreignStmt = null;
         PreparedStatement deleteStmt = null;
         try {
-            conn = getConnection();
-            foreignStmt = conn.prepareStatement(SET_FOREIGN_KEY_CHECKS);
+            connection = getConnection();
+            foreignStmt = connection.prepareStatement(SET_FOREIGN_KEY_CHECKS);
             foreignStmt.setInt(1, 0);
             System.out.println(foreignStmt);
             foreignStmt.execute();
 
-            deleteStmt = conn.prepareStatement(DELETE_GAME);
+            deleteStmt = connection.prepareStatement(DELETE_GAME);
             deleteStmt.setString(1, gameName);
             System.out.println(deleteStmt);
             deleteStmt.execute();
 
-            foreignStmt = conn.prepareStatement(SET_FOREIGN_KEY_CHECKS);
+            foreignStmt = connection.prepareStatement(SET_FOREIGN_KEY_CHECKS);
             foreignStmt.setInt(1, 1);
             System.out.println(foreignStmt);
             foreignStmt.execute();
@@ -187,15 +209,14 @@ public class GameDaoImpl implements GameDao {
             throwables.printStackTrace();
             return false;
         } finally {
-            close(conn);
+            close(connection);
             close(foreignStmt);
             close(deleteStmt);
         }
     }
 
-    // "SELECT distinct t1.user_name, t1.game_name, t1.sport_category, t1.game_date, t3.country_name, t1.city, t1.players, t1.level\n" +
-    @Override
-    public DefaultTableModel findAllGames() {
+    // General Method.
+    private DefaultTableModel buildDefaultTableModel() {
         DefaultTableModel dm = new DefaultTableModel();
         dm.addColumn("user_name");
         dm.addColumn("game_name");
@@ -206,42 +227,66 @@ public class GameDaoImpl implements GameDao {
         dm.addColumn("players");
         dm.addColumn("level");
         dm.addColumn("creation_date");
+        return dm;
+    }
 
+    // General Method.
+    private String[] resultSetStrings(ResultSet rs) throws SQLException {
+        String game_name = rs.getString(1);
+        String user_name = rs.getString(2);
+        String sport_category = rs.getString(3);
+        String country = rs.getString(4);
+        String city = rs.getString(5);
+        String game_date = rs.getString(6);
+        String players = rs.getString(7);
+        String level = rs.getString(8);
+        String creationDate = rs.getString(9);
+        return new String[]{game_name, user_name, sport_category, country, city, game_date ,  players, level, creationDate};
+    }
+
+
+
+    // "SELECT distinct t1.user_name, t1.game_name, t1.sport_category, t1.game_date, t3.country_name, t1.city, t1.players, t1.level\n" +
+    @Override
+    public DefaultTableModel findAllGames() throws SQLException {
+        DefaultTableModel dm = buildDefaultTableModel();
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
-            Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(FIND_ALL_GAMES);
-            ResultSet rs = stmt.executeQuery();
+            connection = getConnection();
+            stmt = connection.prepareStatement(FIND_ALL_GAMES);
+            rs = stmt.executeQuery();
             while (rs.next()) {
-                String game_name = rs.getString(1);
-                String user_name = rs.getString(2);
-                String sport_category = rs.getString(3);
-                String country = rs.getString(4);
-                String city = rs.getString(5);
-                String game_date = rs.getString(6);
-                String players = rs.getString(7);
-                String level = rs.getString(8);
-                String creationDate = rs.getString(9);
-                dm.addRow(new String[]{game_name, user_name, sport_category, country, city, game_date ,  players, level, creationDate});
+                dm.addRow(resultSetStrings(rs));
             }
             return dm;
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            close(connection);
+            close(stmt);
+            assert rs != null;
+            rs.close();
         }
         return null;
     }
 
     @Override
-    public DefaultTableModel findMatches(String userName) {
+    public DefaultTableModel findMatches(String userName) throws SQLException {
         DefaultTableModel dm = new DefaultTableModel();
         dm.addColumn("user_name");
         dm.addColumn("game_name");
         dm.addColumn("creation_date");
         dm.addColumn("participant");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
-            Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(GET_ALL_GAME_MATCHES);
+            conn = getConnection();
+            stmt = conn.prepareStatement(GET_ALL_GAME_MATCHES);
             stmt.setString(1, userName);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 String user_name = rs.getString(1);
                 String game_name = rs.getString(2);
@@ -252,21 +297,27 @@ public class GameDaoImpl implements GameDao {
             return dm;
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            close(conn);
+            close(stmt);
+            assert rs != null;
+            rs.close();
         }
         return null;
     }
 
     @Override
-    public String findColumnRow(int currentRow, String flag) {
+    public String findColumnRow(int currentRow, String flag) throws SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
         String gameName = null;
+        ResultSet rs = null;
         try {
             conn = getConnection();
             stmt = conn.prepareStatement(FIND_GAME_CURR_ROW);
             stmt.setInt(1, currentRow);
             System.out.println(stmt);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 gameName = rs.getString(1);
                 System.out.println(gameName);
@@ -278,40 +329,25 @@ public class GameDaoImpl implements GameDao {
         } finally {
             close(stmt);
             close(conn);
+            assert rs != null;
+            rs.close();
         }
     }
 
     @Override
-    public DefaultTableModel findByGameName(String gameName) {
-        DefaultTableModel dm = new DefaultTableModel();
-        dm.addColumn("user_name");
-        dm.addColumn("game_name");
-        dm.addColumn("sport_category");
-        dm.addColumn("Country");
-        dm.addColumn("city");
-        dm.addColumn("game_date");
-        dm.addColumn("players");
-        dm.addColumn("level");
-        dm.addColumn("creation_date");
+    public DefaultTableModel findByGameName(String gameName) throws SQLException {
+        DefaultTableModel dm = buildDefaultTableModel();
         Connection conn = null;
         PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             conn = getConnection();
             stmt = conn.prepareStatement(JOIN_QUERY_GAME_NAME);
             stmt.setString(1, gameName);
             System.out.println(stmt);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
-                String game_name = rs.getString(1);
-                String user_name = rs.getString(2);
-                String sport_category = rs.getString(3);
-                String country = rs.getString(4);
-                String city = rs.getString(5);
-                String game_date = rs.getString(6);
-                String players = rs.getString(7);
-                String level = rs.getString(8);
-                String creationDate = rs.getString(9);
-                dm.addRow(new String[]{game_name, user_name, sport_category, country, city, game_date ,  players, level, creationDate});
+                dm.addRow(resultSetStrings(rs));
             }
             return dm;
         } catch (SQLException e) {
@@ -319,39 +355,23 @@ public class GameDaoImpl implements GameDao {
         } finally {
             close(stmt);
             close(conn);
+            rs.close();
         }
     }
 
-    public DefaultTableModel findByCityName(String city) {
-        DefaultTableModel dm = new DefaultTableModel();
-        dm.addColumn("user_name");
-        dm.addColumn("game_name");
-        dm.addColumn("sport_category");
-        dm.addColumn("Country");
-        dm.addColumn("city");
-        dm.addColumn("game_date");
-        dm.addColumn("players");
-        dm.addColumn("level");
-        dm.addColumn("creation_date");
+    public DefaultTableModel findByCityName(String city) throws SQLException {
+        DefaultTableModel dm = buildDefaultTableModel();
         Connection conn = null;
         PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             conn = getConnection();
             stmt = conn.prepareStatement(JOIN_QUERY_CITY);
             stmt.setString(1, city);
             System.out.println(stmt);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
-                String game_name = rs.getString(1);
-                String user_name = rs.getString(2);
-                String sport_category = rs.getString(3);
-                String country = rs.getString(4);
-                String citySet = rs.getString(5);
-                String game_date = rs.getString(6);
-                String players = rs.getString(7);
-                String level = rs.getString(8);
-                String creationDate = rs.getString(9);
-                dm.addRow(new String[]{game_name, user_name, sport_category, country, citySet, game_date ,  players, level, creationDate});
+                dm.addRow(resultSetStrings(rs));
             }
             return dm;
         } catch (SQLException e) {
@@ -359,21 +379,13 @@ public class GameDaoImpl implements GameDao {
         } finally {
             close(stmt);
             close(conn);
+            rs.close();
         }
     }
 
     @Override
     public DefaultTableModel findByCountryName(String countryName) {
-        DefaultTableModel dm = new DefaultTableModel();
-        dm.addColumn("user_name");
-        dm.addColumn("game_name");
-        dm.addColumn("sport_category");
-        dm.addColumn("Country");
-        dm.addColumn("city");
-        dm.addColumn("game_date");
-        dm.addColumn("players");
-        dm.addColumn("level");
-        dm.addColumn("creation_date");
+        DefaultTableModel dm = buildDefaultTableModel();
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -383,16 +395,7 @@ public class GameDaoImpl implements GameDao {
             System.out.println(stmt);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                String game_name = rs.getString(1);
-                String user_name = rs.getString(2);
-                String sport_category = rs.getString(3);
-                String country = rs.getString(4);
-                String citySet = rs.getString(5);
-                String game_date = rs.getString(6);
-                String players = rs.getString(7);
-                String level = rs.getString(8);
-                String creationDate = rs.getString(9);
-                dm.addRow(new String[]{game_name, user_name, sport_category, country, citySet, game_date ,  players, level, creationDate});
+                dm.addRow(resultSetStrings(rs));
             }
             return dm;
         } catch (SQLException e) {
@@ -404,16 +407,7 @@ public class GameDaoImpl implements GameDao {
     }
 
     public DefaultTableModel findMaxLevelGamesInEachCountry(String category) {
-        DefaultTableModel dm = new DefaultTableModel();
-        dm.addColumn("user_name");
-        dm.addColumn("game_name");
-        dm.addColumn("sport_category");
-        dm.addColumn("Country");
-        dm.addColumn("city");
-        dm.addColumn("game_date");
-        dm.addColumn("players");
-        dm.addColumn("level");
-        dm.addColumn("creation_date");
+        DefaultTableModel dm = buildDefaultTableModel();
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
@@ -423,16 +417,7 @@ public class GameDaoImpl implements GameDao {
             System.out.println(stmt);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                String game_name = rs.getString(1);
-                String user_name = rs.getString(2);
-                String sport_category = rs.getString(3);
-                String country = rs.getString(4);
-                String city = rs.getString(5);
-                String game_date = rs.getString(6);
-                String players = rs.getString(7);
-                String level = rs.getString(8);
-                String creationDate = rs.getString(9);
-                dm.addRow(new String[]{game_name, user_name, sport_category, country, city, game_date ,  players, level, creationDate});
+                dm.addRow(resultSetStrings(rs));
             }
             return dm;
         } catch (SQLException e) {
@@ -468,55 +453,6 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-    /*@Override
-    public int insertUserGames(Game game, String userName) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = getConnection();
-            stmt = conn.prepareStatement(INSERT_USER_GAMES, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, game.getGameName());
-            stmt.setString(2, userName);
-            stmt.setString(3, game.getSportCategory());
-            System.out.println(stmt);
-            int result = stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                game.setGameName(rs.getString(1));
-            }
-            return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            close(stmt);
-            close(conn);
-        }
-    }
-
-    @Override
-    public int insertGameRegion(Game game) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = getConnection();
-            stmt = conn.prepareStatement(INSERT_GAME_REGION, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, game.getGameName());
-            stmt.setString(2, game.getCountry());
-            stmt.setString(3, game.getCity());
-            System.out.println(stmt);
-            int result = stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                game.setGameName(rs.getString(1));
-            }
-            return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            close(stmt);
-            close(conn);
-        }
-    }*/
 
     @Override
     public int insertGameDetails(String userName, Game game) {
@@ -585,7 +521,6 @@ public class GameDaoImpl implements GameDao {
             if (flag.equals("DownLevel")) {
                 stmt.setInt(1, gameNumOfPlayers - 1);
             } else {
-                System.out.println("Should up level");
                 stmt.setInt(1, gameNumOfPlayers + 1);
             }
             stmt.setString(2, gameName);
@@ -602,31 +537,15 @@ public class GameDaoImpl implements GameDao {
 
     @Override
     public boolean updateGameFullDetails(Game game, String oldGame) {
-        // Description: Update all the games tables, each with its relevant details
-        // 1) UPDATE_GAME_REGION
-        // 2) UPDATE_GAME_DETAILS
-        // 3) UPDATE_USER_GAMES
         Connection conn = null;
         PreparedStatement foreignStmt = null;
-        PreparedStatement gameRegionUpdateStmt = null;
         PreparedStatement gameDetailsUpdateStmt = null;
-        PreparedStatement userGameUpdateStmt = null;
-
         try {
             conn = getConnection();
-            // SET_FOREIGN_KEY_CHECKS
-            foreignStmt = conn.prepareStatement(SET_FOREIGN_KEY_CHECKS);
+            foreignStmt = conn.prepareStatement(SET_FOREIGN_KEY_CHECKS); // SET_FOREIGN_KEY_CHECKS
             foreignStmt.setInt(1, 0);
             System.out.println(foreignStmt);
             foreignStmt.execute();
-
-            /*gameRegionUpdateStmt = conn.prepareStatement(UPDATE_GAME_REGION);
-            gameRegionUpdateStmt.setString(1, game.getGameName());
-            gameRegionUpdateStmt.setString(2, game.getCountry());
-            gameRegionUpdateStmt.setString(3, game.getCity());
-            gameRegionUpdateStmt.setString(4, oldGame);
-            System.out.println(gameRegionUpdateStmt);
-            gameRegionUpdateStmt.execute();*/
 
             // UPDATE_GAME_DETAILS = "UPDATE game_details SET game_name = ?, game_date = ?, city = ? ,sport_category = ?, players = ?, level =? WHERE game_name = ?";
             gameDetailsUpdateStmt = conn.prepareStatement(UPDATE_GAME_DETAILS);
@@ -640,19 +559,10 @@ public class GameDaoImpl implements GameDao {
             System.out.println(gameDetailsUpdateStmt);
             gameDetailsUpdateStmt.execute();
 
-
-            /*userGameUpdateStmt = conn.prepareStatement(UPDATE_USER_GAMES);
-            userGameUpdateStmt.setString(1, game.getGameName());
-            userGameUpdateStmt.setString(2, game.getSportCategory());
-            userGameUpdateStmt.setString(3, oldGame);
-            System.out.println(userGameUpdateStmt);
-            userGameUpdateStmt.execute();*/
-
             foreignStmt = conn.prepareStatement(SET_FOREIGN_KEY_CHECKS);
             foreignStmt.setInt(1, 1);
             System.out.println(foreignStmt);
             foreignStmt.execute();
-
             return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -660,22 +570,21 @@ public class GameDaoImpl implements GameDao {
         } finally {
             close(foreignStmt);
             close(gameDetailsUpdateStmt);
-            close(gameRegionUpdateStmt);
-            close(userGameUpdateStmt);
             close(conn);
         }
     }
 
     @Override
-    public int getCurrNumPlayers(String gameName) {
+    public int getCurrNumPlayers(String gameName) throws SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
+        ResultSet rs = null;
         int level = -1;
         try {
             conn = getConnection();
             stmt = conn.prepareStatement(FIND_NUM_OF_PLAYERS_GAME);
             stmt.setString(1, gameName);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 level = rs.getInt(1);
             }
@@ -686,6 +595,7 @@ public class GameDaoImpl implements GameDao {
         } finally {
             close(stmt);
             close(conn);
+            rs.close();
         }
     }
 }
