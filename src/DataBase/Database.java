@@ -1,5 +1,6 @@
 package DataBase;
 
+import javax.script.ScriptException;
 import java.io.*;
 import java.sql.*;
 import java.util.Properties;
@@ -19,6 +20,7 @@ public class Database implements IDataBase {
     private static String DB_PASSWORD;
 
 
+
     // TODO - Add singleton design pattern
     private Database() throws IOException {
         this.propertiesArray = getJDBCProperties();
@@ -26,6 +28,7 @@ public class Database implements IDataBase {
         DB_URL = propertiesArray[1];
         DB_USER = propertiesArray[2];
         DB_PASSWORD = propertiesArray[3];
+
     }
 
 
@@ -148,8 +151,88 @@ public class Database implements IDataBase {
         return rc;
     }
 
-    public void loadDataSet() {
+    public void loadDataSet() throws ScriptException, IOException, InterruptedException {
+        createCostumeCsv();
+
         System.out.println("Loading the data set csv file...");
+        String csvFilePath1 = ".\\src\\DataBase\\countries_data.csv";
+        String csvFilePath2 = ".\\src\\DataBase\\removed.csv";
+
+        String sql1 = "INSERT INTO countries (country_name, country_id) VALUES (?, ?)";
+        String sql2 = "INSERT INTO cities (city_name, country_id) VALUES (?, ?)";
+
+
+        insertDb(DB_URL,DB_USER,DB_PASSWORD,sql1,csvFilePath1,20 );
+        insertDb(DB_URL,DB_USER,DB_PASSWORD,sql2,csvFilePath2,20 );
+
+
+    }
+
+    public void createCostumeCsv() throws ScriptException, IOException{
+        try{
+            ProcessBuilder builder = new ProcessBuilder("python", System.getProperty("user.dir") + "\\src\\DataBase\\script.py" );
+            Process process = builder.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader readers = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String lines=null;
+
+            while ((lines=reader.readLine())!=null){
+                System.out.println("lines"+lines);
+            }
+            while ((lines=readers.readLine())!=null){
+                System.out.println("Error lines: "+lines);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public void insertDb(String jdbcURL, String username, String password, String insert_query, String file_path, int batchSize ){
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(jdbcURL, username, password);
+            connection.setAutoCommit(false);
+            PreparedStatement statement = connection.prepareStatement(insert_query);
+            BufferedReader lineReader = new BufferedReader(new FileReader(file_path));
+            String lineText = null;
+            int count = 0;
+            lineReader.readLine(); // skip header line
+            String column1=null ,column2=null;
+
+            while ((lineText = lineReader.readLine()) != null) {
+                String[] data = lineText.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
+                System.out.println(data[0] + "," + data[1] );
+                column1 = data[0];column2 = data[1];
+
+                statement.setString(1, column1);
+                statement.setString(2, column2);
+                statement.addBatch();
+
+                if (count % batchSize == 0) {
+                    statement.executeBatch();
+                }
+            }
+
+            lineReader.close();
+
+            // execute the remaining queries
+            statement.executeBatch();
+
+            connection.commit();
+            connection.close();
+
+        } catch (IOException ex) {
+            System.err.println(ex);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

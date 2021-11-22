@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS countries
 CREATE TABLE IF NOT EXISTS cities
 ( city_name varchar(70) NOT NULL,
   country_id varchar(35) NOT NULL,
-  PRIMARY KEY (city_name),
+  PRIMARY KEY (city_name,country_id),
   FOREIGN KEY (country_id) REFERENCES countries(country_id)
 );
 

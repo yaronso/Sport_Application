@@ -28,27 +28,27 @@ public class JoinGame extends JFrame {
     private void initComponents(String userName) throws IOException {
         // Initialization Objects:
         GameDao gameDao = new GameDaoImpl();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        jPanel1 = new JPanel();
+        jPanel2 = new JPanel();
+        jScrollPane1 = new JScrollPane();
         jScrollPaneMatchGames = new JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        matchGamesTable = new javax.swing.JTable();
+        jTable1 = new JTable();
+        matchGamesTable = new JTable();
 
         // TextFields:
-        gameNameTxt = new javax.swing.JTextField();
-        sportCategoryTxt = new javax.swing.JTextField();
+        gameNameTxt = new JTextField();
+        sportCategoryTxt = new JTextField();
         cityTxt = new JTextField();
-        countryTxt = new javax.swing.JTextField();
+        countryTxt = new JTextField();
         dateTxt = new JTextField();
         playersTxt = new JTextField();
         levelTxt = new JTextField();
         creationDateTxt = new JTextField();
 
         // JLabels:
-        jLabelGameName = new javax.swing.JLabel();
-        jLabelSportCategory = new javax.swing.JLabel();
-        jLabelCountry = new javax.swing.JLabel();
+        jLabelGameName = new JLabel();
+        jLabelSportCategory = new JLabel();
+        jLabelCountry = new JLabel();
         jLabelCity = new JLabel();
         jLabelDate = new JLabel();
         jLabelPlayers = new JLabel();
@@ -62,34 +62,34 @@ public class JoinGame extends JFrame {
         jLabelGameLevel.setText("Level");
 
         // JButtons:
-        retrieveBtn = new javax.swing.JButton();
-        addBtn = new javax.swing.JButton();
-        updateBtn = new javax.swing.JButton();
-        Delete = new javax.swing.JButton();
+        retrieveBtn = new JButton();
+        addBtn = new JButton();
+        updateBtn = new JButton();
+        Delete = new JButton();
         deleteMatch = new JButton();
-        clearBtn = new javax.swing.JButton();
-        joinGameButton = new javax.swing.JButton();
-        showMyGames = new javax.swing.JButton();
-        dateButton = new javax.swing.JButton();
-        jLabelTitle = new javax.swing.JLabel();
+        clearBtn = new JButton();
+        joinGameButton = new JButton();
+        showMyGames = new JButton();
+        dateButton = new JButton();
+        jLabelTitle = new JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jPanel1.setBackground(new java.awt.Color(45, 155, 193));
 
         // Set the full Games Table
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTable1.setModel(new DefaultTableModel(
                 new Object [][] {}, new String [] {} ));
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 jTable1MouseClicked(evt);
             }
         });
 
         // Set up the match games table
-        matchGamesTable.setModel(new javax.swing.table.DefaultTableModel(
+        matchGamesTable.setModel(new DefaultTableModel(
                 new Object [][] {}, new String [] {} ));
         matchGamesTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+            public void mouseClicked(MouseEvent evt) {
                 matchGamesTableMouseClicked(evt);
             }
         });
@@ -105,8 +105,8 @@ public class JoinGame extends JFrame {
 
         // Buttons actions performed:
         retrieveBtn.setText("Retrieve");
-        retrieveBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        retrieveBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
                     retrieveBtnActionPerformed(evt, gameDao);
@@ -117,8 +117,8 @@ public class JoinGame extends JFrame {
         });
 
         addBtn.setText("Add");
-        addBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        addBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
                     addBtnActionPerformed(evt, userName, gameDao);
@@ -129,8 +129,8 @@ public class JoinGame extends JFrame {
         });
 
         updateBtn.setText("Update");
-        updateBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        updateBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
                     updateBtnActionPerformed(evt, userName, gameDao, jTable1);
@@ -141,8 +141,8 @@ public class JoinGame extends JFrame {
         });
 
         Delete.setText("Delete Game");
-        Delete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        Delete.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
                     DeleteActionPerformed(evt, userName, gameDao, jTable1);
@@ -153,8 +153,8 @@ public class JoinGame extends JFrame {
         });
 
         deleteMatch.setText("Delete Match");
-        deleteMatch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        deleteMatch.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPaneMatchGames, matchGamesTable);
                 try {
                     DeleteMatchActionPerformed(evt, userName, gameDao, matchGamesTable);
@@ -165,16 +165,16 @@ public class JoinGame extends JFrame {
         });
 
         clearBtn.setText("Clear");
-        clearBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        clearBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 clearBtnActionPerformed(evt);
             }
         });
 
         joinGameButton.setText("Join A Game");
-        joinGameButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        joinGameButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
                     joinGameBtnActionPerformed(evt, userName, gameDao);
@@ -185,8 +185,8 @@ public class JoinGame extends JFrame {
         });
 
         showMyGames.setText("Your Games");
-        showMyGames.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        showMyGames.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPaneMatchGames, matchGamesTable);
                 try {
                     retrieveMatches(gameDao, userName);
@@ -197,44 +197,44 @@ public class JoinGame extends JFrame {
         });
 
         // Set the screen layout and its components:
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         // Horizontal Group
         jPanel2Layout.setHorizontalGroup(
-                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-                                .addComponent(jScrollPaneMatchGames, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
+                                .addComponent(jScrollPaneMatchGames, GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                        .addGroup(GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                                         .addComponent(jLabelGameName)
                                                                         .addComponent(jLabelSportCategory))
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(gameNameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(sportCategoryTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(gameNameTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(sportCategoryTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
                                                                 .addGap(21, 21, 21))
 
                                                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                                                         .addComponent(jLabelCountry)
                                                                         .addGap(18, 18, 18)
-                                                                        .addComponent(countryTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addComponent(countryTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
 
                                                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                                                         .addComponent(jLabelCity)
                                                                         .addGap(18, 18, 18)
-                                                                        .addComponent(cityTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addComponent(cityTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
                                                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                                                         .addComponent(jLabelDate)
                                                                         .addGap(18, 18, 18)
-                                                                        .addComponent(dateTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(dateTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
                                                                         .addGap(18, 18, 18)
                                                                         .addComponent(dateButton)
 
@@ -242,135 +242,135 @@ public class JoinGame extends JFrame {
                                                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                                                         .addComponent(jLabelPlayers)
                                                                         .addGap(18, 18, 18)
-                                                                        .addComponent(playersTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addComponent(playersTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
                                                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                                                         .addComponent(jLabelGameLevel)
                                                                         .addGap(18, 18, 18)
-                                                                        .addComponent(levelTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                        .addComponent(levelTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)))
                                                                 .addGap(0, 9, Short.MAX_VALUE))
 
 
                                         .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                .addComponent(updateBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                .addComponent(Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                .addComponent(deleteMatch, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addComponent(updateBtn, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addComponent(Delete, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addComponent(deleteMatch, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE))
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                .addComponent(addBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                .addComponent(retrieveBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                .addComponent(addBtn, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addComponent(retrieveBtn, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE))
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                .addComponent(clearBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                .addComponent(joinGameButton, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                                .addComponent(showMyGames, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))))));
+                                                                .addComponent(clearBtn, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addComponent(joinGameButton, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                                .addComponent(showMyGames, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)))))));
 
         // Vertical Group
         jPanel2Layout.setVerticalGroup(
-                jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                 .addGap(50, 50, 50)
-                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                                         .addComponent(jLabelGameName)
-                                                                        .addComponent(gameNameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addComponent(gameNameTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                                                 .addGap(27, 27, 27)
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                                         .addComponent(jLabelSportCategory)
-                                                                        .addComponent(sportCategoryTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addComponent(sportCategoryTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                                                 .addGap(52, 52, 52))
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                                         .addComponent(jLabelCountry)
-                                                                        .addComponent(countryTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                                        .addComponent(countryTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
                                                                 .addGap(52, 52, 52)
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                                         .addComponent(jLabelCity)
-                                                                        .addComponent(cityTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addComponent(cityTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                                                 .addGap(52, 52, 52)
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                                         .addComponent(jLabelDate)
-                                                                        .addComponent(dateTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(dateButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE) )
+                                                                        .addComponent(dateTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                                        .addComponent(dateButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE) )
                                                                 .addGap(52, 52, 52)
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                                         .addComponent(jLabelPlayers)
-                                                                        .addComponent(playersTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addComponent(playersTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                                                 .addGap(52, 52, 52)
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                                         .addComponent(jLabelGameLevel)
-                                                                        .addComponent(levelTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                                        .addComponent(levelTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                                                 .addGap(52, 52, 52)
 
-                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                         .addComponent(addBtn)
                                                         .addComponent(retrieveBtn))
                                                 .addGap(51, 51, 51)
 
-                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                         .addComponent(updateBtn)
                                                         .addComponent(Delete)
                                                         .addComponent(deleteMatch))
 
                                                 .addGap(51, 51, 51)
-                                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                         .addComponent(clearBtn)
                                                         .addComponent(joinGameButton)
                                                         .addComponent(showMyGames))
                                         )
                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                 .addGap(38, 38, 38)
-                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
-                                                .addComponent(jScrollPaneMatchGames, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)));
+                                                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 306, GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                                                .addComponent(jScrollPaneMatchGames, GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)))
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)));
 
         jLabelTitle.setText("Games Management");
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(234, 234, 234)
-                                .addComponent(jLabelTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabelTitle, GroupLayout.PREFERRED_SIZE, 193, GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jPanel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(17, 17, 17)
                                 .addComponent(jLabelTitle)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jPanel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addContainerGap())
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -447,7 +447,7 @@ public class JoinGame extends JFrame {
 
 
     // Set the selected values to the relevant text fields of game management table
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {
+    private void jTable1MouseClicked(MouseEvent evt) {
         String game = jTable1.getValueAt(jTable1.getSelectedRow(), 1).toString();
         String sport = jTable1.getValueAt(jTable1.getSelectedRow(), 2).toString();
         String country = jTable1.getValueAt(jTable1.getSelectedRow(), 3).toString();
@@ -520,7 +520,7 @@ public class JoinGame extends JFrame {
 
 
     // clear the text fields and the table content
-    private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {
+    private void clearBtnActionPerformed(ActionEvent evt) {
         jTable1.setModel(new DefaultTableModel());
     }
 
@@ -539,10 +539,10 @@ public class JoinGame extends JFrame {
 
 
     // labels declarations:
-    private javax.swing.JLabel jLabelGameName;
-    private javax.swing.JLabel jLabelSportCategory;
-    private javax.swing.JLabel jLabelCountry;
-    private javax.swing.JLabel jLabelTitle;
+    private JLabel jLabelGameName;
+    private JLabel jLabelSportCategory;
+    private JLabel jLabelCountry;
+    private JLabel jLabelTitle;
     private JLabel jLabelCity;
     private JLabel jLabelDate;
     private JLabel jLabelPlayers;
@@ -550,31 +550,31 @@ public class JoinGame extends JFrame {
 
 
     // Text Fields declarations:
-    private javax.swing.JTextField gameNameTxt;
-    private javax.swing.JTextField sportCategoryTxt;
-    private javax.swing.JTextField countryTxt;
-    private javax.swing.JTextField cityTxt;
-    private javax.swing.JTextField dateTxt;
-    private javax.swing.JTextField playersTxt;
-    private javax.swing.JTextField levelTxt;
-    private javax.swing.JTextField creationDateTxt;
+    private JTextField gameNameTxt;
+    private JTextField sportCategoryTxt;
+    private JTextField countryTxt;
+    private JTextField cityTxt;
+    private JTextField dateTxt;
+    private JTextField playersTxt;
+    private JTextField levelTxt;
+    private JTextField creationDateTxt;
 
     // Buttons declarations:
-    private javax.swing.JButton retrieveBtn;
-    private javax.swing.JButton updateBtn;
-    private javax.swing.JButton Delete;
-    private javax.swing.JButton deleteMatch;
-    private javax.swing.JButton addBtn;
-    private javax.swing.JButton clearBtn;
-    private javax.swing.JButton joinGameButton;
-    private javax.swing.JButton showMyGames;
-    private javax.swing.JButton dateButton;
+    private JButton retrieveBtn;
+    private JButton updateBtn;
+    private JButton Delete;
+    private JButton deleteMatch;
+    private JButton addBtn;
+    private JButton clearBtn;
+    private JButton joinGameButton;
+    private JButton showMyGames;
+    private JButton dateButton;
 
     // etc
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPaneMatchGames;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable matchGamesTable;
+    private JPanel jPanel1;
+    private JPanel jPanel2;
+    private JScrollPane jScrollPane1;
+    private JScrollPane jScrollPaneMatchGames;
+    private JTable jTable1;
+    private JTable matchGamesTable;
 }
