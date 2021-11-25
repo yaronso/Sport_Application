@@ -70,8 +70,13 @@ public class FindGame extends JFrame {
         findAccGameNameBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DefaultTableModel dm = null;
+                String gameName = gameNameTxt.getText();
                 try {
-                    dm = gameDao.findByGameName(gameNameTxt.getText());
+                    if(Utils.PropertiesReaders.isAnyObjectNull(gameName)) {
+                        JOptionPane.showMessageDialog(findAccGameNameBtn, "Find Game Error: You must write the game name.");
+                        return;
+                    }
+                    dm = gameDao.findByGameName(gameName);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -84,8 +89,13 @@ public class FindGame extends JFrame {
         findCityBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DefaultTableModel dm = null;
+                String city = findGameCityTxt.getText();
                 try {
-                    dm = gameDao.findByCityName(findGameCityTxt.getText());
+                    if(Utils.PropertiesReaders.isAnyObjectNull(city)) {
+                        JOptionPane.showMessageDialog(findCityBtn, "Find City Error: You must write a city.");
+                        return;
+                    }
+                    dm = gameDao.findByCityName(city);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -97,7 +107,18 @@ public class FindGame extends JFrame {
         findCountryBtn.setText("Find All Countries");
         findCountryBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DefaultTableModel dm = gameDao.findByCountryName(countryTxt.getText());
+                DefaultTableModel dm = null;
+                String country = countryTxt.getText();
+                try {
+                    if(Utils.PropertiesReaders.isAnyObjectNull(country)) {
+                        JOptionPane.showMessageDialog(findCountryBtn, "Find Country Error: You must write a country.");
+                        return;
+                    }
+                    dm = gameDao.findByCountryName(country);
+                } catch (SQLException exception) {
+                    exception.printStackTrace();
+                }
+                assert dm != null;
                 jTable1.setModel(dm);
                 setViewTable();
             }
@@ -106,7 +127,17 @@ public class FindGame extends JFrame {
         findMaxLevelBtn.setText("Find Max");
         findMaxLevelBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DefaultTableModel dm = gameDao.findMaxLevelGamesInEachCountry(findMaxLevelTxt.getText());
+                DefaultTableModel dm = null;
+                String max = findMaxLevelTxt.getText();
+                try {
+                    if(Utils.PropertiesReaders.isAnyObjectNull(max)) {
+                        JOptionPane.showMessageDialog(findMaxLevelBtn, "Find Max Level Error: You must write the game's category.");
+                        return;
+                    }
+                    dm = gameDao.findMaxLevelGamesInEachCountry(max);
+                } catch (SQLException exception) {
+                    exception.printStackTrace();
+                }
                 jTable1.setModel(dm);
                 setViewTable();
             }
@@ -115,7 +146,17 @@ public class FindGame extends JFrame {
         countryMostPlayedBtn.setText("Click");
         countryMostPlayedBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DefaultTableModel dm = gameDao.findCountryMostPlayedSport(countryMostPlayedText.getText());
+                DefaultTableModel dm = null;
+                String mostPlayedCountry = countryMostPlayedText.getText();
+                try {
+                    if(Utils.PropertiesReaders.isAnyObjectNull(mostPlayedCountry)) {
+                        JOptionPane.showMessageDialog(countryMostPlayedBtn, "Most Played Category In Country Error: You must write the Sport Category.");
+                        return;
+                    }
+                    dm = gameDao.findCountryMostPlayedSport(mostPlayedCountry);
+                } catch (SQLException exception) {
+                    exception.printStackTrace();
+                }
                 jTable1.setModel(dm);
                 setViewTable();
             }
@@ -129,7 +170,6 @@ public class FindGame extends JFrame {
                 clearBtnActionPerformed(evt);
             }
         });
-
 
 
         // Set the screen layout and its components:

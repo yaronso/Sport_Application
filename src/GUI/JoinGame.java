@@ -3,6 +3,8 @@ package GUI;
 import Dao.GameDao;
 import Dao.GameDaoImpl;
 import Models.Game;
+import com.mysql.cj.util.Util;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
@@ -17,6 +19,7 @@ public class JoinGame extends JFrame {
     public JoinGame(String userName) throws IOException {
         initComponents(userName);
     }
+
 
     // Retrieve the games table to the application screen
     private void retrieve(GameDao gameDao) throws SQLException {
@@ -121,7 +124,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
-                    addBtnActionPerformed(evt, userName, gameDao);
+                    addBtnActionPerformed(evt, userName, gameDao, addBtn);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -133,7 +136,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
-                    updateBtnActionPerformed(evt, userName, gameDao, jTable1);
+                    updateBtnActionPerformed(evt, userName, gameDao, jTable1, updateBtn);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -145,7 +148,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
-                    DeleteActionPerformed(evt, userName, gameDao, jTable1);
+                    DeleteActionPerformed(evt, userName, gameDao, jTable1, Delete);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -157,7 +160,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPaneMatchGames, matchGamesTable);
                 try {
-                    DeleteMatchActionPerformed(evt, userName, gameDao, matchGamesTable);
+                    DeleteMatchActionPerformed(evt, userName, gameDao, matchGamesTable, deleteMatch);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -177,7 +180,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
-                    joinGameBtnActionPerformed(evt, userName, gameDao);
+                    joinGameBtnActionPerformed(evt, userName, gameDao, joinGameButton);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -377,24 +380,22 @@ public class JoinGame extends JFrame {
     }// </editor-fold>
 
 
-    private void DeleteMatchActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JTable matchGamesTable) throws SQLException {
+    // Delete from match games table.
+    private void DeleteMatchActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JTable matchGamesTable, JButton deleteMatch) throws SQLException {
         String[] options = {"Yes", "No"};
         int rs = JOptionPane.showOptionDialog(null, "Sure To Delete?", "Delete Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
         if (rs == 0) {
             int currRow = matchGamesTable.getSelectedRow();
-            // The delete query can be only executed by the user who created the game
+            if (Utils.PropertiesReaders.isAnyObjectNull(currRow) || currRow == -1) {
+                JOptionPane.showMessageDialog(deleteMatch, "Delete Match Error: You must choose a match game from your games list to delete.");
+                return;
+            }
+            // The delete query can be only executed by the user who created the game , update the game level with ++1 at the game management table.
             String gameName = matchGamesTable.getValueAt(currRow, 1).toString();
-            if (gameDao.deleteFromMatchGames(participant, gameName)) { /* if succeeded to delete from matches table */
+            if (gameDao.deleteFromMatchGames(participant, gameName)) { /* if succeeded to delete from matches table Transactional */
                 JOptionPane.showMessageDialog(null, "Deleted Updated");
                 retrieveMatches(gameDao, participant);
-                // If the user deleted a match from his match tables, update the game level with ++1 at the game management table.
-                int currNumPlayers = gameDao.getCurrNumPlayers(gameName);
-                if(currNumPlayers != -1) { /* if succeeded to retrieve the current number of players */
-                    if (gameDao.updateGameLevel(gameName, currNumPlayers, "UpLevel")) {
-                        retrieveMatches(gameDao, participant);
-                    }
-                    retrieve(gameDao);
-                }
+                retrieve(gameDao);
             } else {
                 JOptionPane.showMessageDialog(null, "The game was not deleted");
             }
@@ -419,14 +420,21 @@ public class JoinGame extends JFrame {
 
     // When a user click to join a new game
     // "INSERT IGNORE INTO match_games(user_name, game_name, creation_date, participant) VALUES(?, ?, ?, ?)";
-    private void joinGameBtnActionPerformed(ActionEvent evt, String participant, GameDao gameDao) throws SQLException {
-        // TODO - add a check that the game does not exist in match
-        // SELECT user_name, creation_date FROM game_details WHERE game_name = gameNameTxt.getText()
-        String userName = jTable1.getValueAt(jTable1.getSelectedRow(), 0).toString();
-        String creationDate = jTable1.getValueAt(jTable1.getSelectedRow(), 8).toString();
-        gameDao.insertToMatchGameTable(userName, gameNameTxt.getText(), creationDate, participant);  // insert a record to match_games table
-        gameDao.updateGameLevel(gameNameTxt.getText(), Integer.parseInt(playersTxt.getText()) , "DownLevel"); // --1 the game number of players
-        JOptionPane.showMessageDialog(null, "Successfully joined");
+    private void joinGameBtnActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JButton joinGameButton) throws SQLException {
+        int currRow = jTable1.getSelectedRow();
+        if (Utils.PropertiesReaders.isAnyObjectNull(currRow) || currRow == -1) {
+            JOptionPane.showMessageDialog(joinGameButton, "Join Game Error: You must choose a game from the entire games list to join to.");
+            return;
+        }
+        String userName = jTable1.getValueAt(currRow, 0).toString();
+        String creationDate = jTable1.getValueAt(currRow, 8).toString();
+        // TODO - check the user does not have this match game in its table!
+        // TODO - If the number of players in game_details is zero delete this game from game_details and alert the creator user!
+        if(gameDao.insertToMatchGameTableAndDownPlayers(userName, gameNameTxt.getText(), creationDate, participant, Integer.parseInt(playersTxt.getText()))) { // Transactional Function.
+            JOptionPane.showMessageDialog(null, "Successfully joined.");
+        } else {
+            JOptionPane.showMessageDialog(null, "Problem was occurred while join game.");
+        }
         retrieve(gameDao);
         retrieveMatches(gameDao, participant);
     }
@@ -436,13 +444,27 @@ public class JoinGame extends JFrame {
         retrieve(gameDao);
     }
 
-    // Add/Create a new game
-    private void addBtnActionPerformed(ActionEvent evt, String userName, GameDao gameDao) throws SQLException {
-        Game game = new Game(gameNameTxt.getText(), sportCategoryTxt.getText(), countryTxt.getText(), cityTxt.getText(), dateTxt.getText(), Integer.parseInt(playersTxt.getText()), Integer.parseInt(levelTxt.getText()));
-        //gameDao.insertUserGames(game, userName);
-        //gameDao.insertGameRegion(game);
-        gameDao.insertGameDetails(userName, game);
-        retrieve(gameDao);
+    // Add/Create a new game.
+    private void addBtnActionPerformed(ActionEvent evt, String userName, GameDao gameDao, JButton addBtn) throws SQLException {
+        String gameName = gameNameTxt.getText();
+        String category = sportCategoryTxt.getText();
+        String country = countryTxt.getText();
+        String city = cityTxt.getText();
+        String date = dateTxt.getText();
+        String players = playersTxt.getText();
+        String level = levelTxt.getText();
+        if(Utils.PropertiesReaders.isAnyObjectNull(gameName, category, country, city, date, players, level)) {
+            JOptionPane.showMessageDialog(addBtn, "Add game error: You must fill all the game details.");
+            return;
+        }
+        Game game = new Game(gameName, category, country, city, date, Integer.parseInt(players), Integer.parseInt(level));
+        if(gameDao.insertGameDetails(userName, game)) { // Transactional.
+            JOptionPane.showMessageDialog(addBtn, "Add Game Succeeded.");
+            retrieve(gameDao);
+            retrieveMatches(gameDao, userName);
+        } else {
+            JOptionPane.showMessageDialog(addBtn, "Add game error: Game Creation Was Failed.");
+        }
     }
 
 
@@ -465,11 +487,14 @@ public class JoinGame extends JFrame {
     }
 
     // Execute update query for all the game tables
-    private void updateBtnActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JTable jTable1) throws SQLException {
+    private void updateBtnActionPerformed(ActionEvent evt, String participant, GameDao gameDao, JTable jTable1, JButton updateBtn) throws SQLException {
         int currRow = jTable1.getSelectedRow();
+        if (Utils.PropertiesReaders.isAnyObjectNull(currRow) || currRow == -1) {
+            JOptionPane.showMessageDialog(updateBtn, "Update Game Error: You must choose a game from the entire games list to update.");
+            return;
+        }
         String userName = jTable1.getValueAt(currRow, 0).toString();
         // The update query can be only executed by the user who created the game
-        // TODO - Check that the fields are not null
         if (userName.equals(participant)) {
             System.out.println("currRow selected is " + currRow);
             Game game = new Game(gameNameTxt.getText(), sportCategoryTxt.getText(), countryTxt.getText(), cityTxt.getText(), dateTxt.getText(), Integer.parseInt(playersTxt.getText()), Integer.parseInt(levelTxt.getText()));
@@ -482,21 +507,24 @@ public class JoinGame extends JFrame {
                 countryTxt.setText("");
                 retrieve(gameDao);
             } else {
-                JOptionPane.showMessageDialog(null, "Error in updated");
+                JOptionPane.showMessageDialog(null, "Update Error: General error was occurred in update.");
             }
         }  else {
-            JOptionPane.showMessageDialog(null, "Not Updated");
+            JOptionPane.showMessageDialog(null, "Update Error: You Are Not The Game Owner.");
         }
     }
 
-    // Execute delete query
-    private void DeleteActionPerformed(ActionEvent evt, String currUser, GameDao gameDao, JTable jTable) throws SQLException {
+    // Execute delete game from the entire games list.
+    private void DeleteActionPerformed(ActionEvent evt, String currUser, GameDao gameDao, JTable jTable, JButton delete) throws SQLException {
         String[] options = {"Yes", "No"};
         int rs = JOptionPane.showOptionDialog(null, "Sure To Delete?", "Delete Confirm", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
         if (rs == 0) {
             int currRow = jTable.getSelectedRow();
+            if (Utils.PropertiesReaders.isAnyObjectNull(currRow) || currRow == -1) {
+                JOptionPane.showMessageDialog(delete, "You must choose a game to delete");
+                return;
+            }
             String userName = jTable.getValueAt(currRow, 0).toString();
-            System.out.println(userName);
             // The delete query can be only executed by the user who created the game
             if (userName.equals(currUser)) {
                 String gameName = jTable.getValueAt(currRow, 1).toString();
@@ -518,10 +546,10 @@ public class JoinGame extends JFrame {
     }
 
 
-
-    // clear the text fields and the table content
+    // clear the text fields of both tables.
     private void clearBtnActionPerformed(ActionEvent evt) {
         jTable1.setModel(new DefaultTableModel());
+        matchGamesTable.setModel(new DefaultTableModel());
     }
 
     // Main Function

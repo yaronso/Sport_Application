@@ -131,9 +131,12 @@ public class UserRegistration extends JFrame {
                 String emailId = email.getText();
                 String userName = username.getText();
                 String mobileNumber = mob.getText();
-                int len = mobileNumber.length();
                 String password = passwordField.getText();
-                if (len != 10) {
+                if (Utils.PropertiesReaders.isAnyObjectNull(firstName, lastName, emailId, userName, password, mobileNumber)) {
+                    JOptionPane.showMessageDialog(btnNewButton, "Please fill all the required fields.");
+                    return;
+                }
+                else if (mobileNumber.length() != 10) {
                     JOptionPane.showMessageDialog(btnNewButton, "Enter a valid mobile number");
                     return;
                 }

@@ -38,6 +38,20 @@ CREATE TABLE IF NOT EXISTS match_games
 );
 
 
+CREATE TABLE IF NOT EXISTS game_details_archives
+(  id INT PRIMARY KEY AUTO_INCREMENT,
+   user_name varchar(15) NOT NULL,
+   game_name varchar(35) NOT NULL,
+   game_date DATETIME NOT NULL,
+   creation_date DATETIME NOT NULL,
+   city varchar(70) NOT NULL,
+   sport_category varchar(20) NOT NULL,
+   players int NOT NULL,
+   level int NOT NULL,
+   FOREIGN KEY(city) REFERENCES cities(city_name),
+   deleted_time TIMESTAMP DEFAULT NOW()
+);
+
 
 
 

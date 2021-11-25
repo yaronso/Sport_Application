@@ -2,6 +2,7 @@ package GUI;
 
 import Dao.UserDao;
 import Dao.UserDaoImpl;
+import jdk.jshell.execution.Util;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -48,8 +49,20 @@ public class ChangePassword extends JFrame {
         JButton btnSearch = new JButton("Enter");
         btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String pstr = textField.getText();
-                userDao.updateChangePass(pstr, userName);
+                String passTxt = textField.getText();
+                try {
+                    if(Utils.PropertiesReaders.isAnyObjectNull(passTxt)) {
+                        JOptionPane.showMessageDialog(btnSearch, "Change Password Error: Please enter your new password.");
+                        return;
+                    }
+                    if(userDao.validPassword(userName).equals(passTxt)) {
+                        JOptionPane.showMessageDialog(btnSearch, "Change Password Error: Your new password similar to your old password.");
+                        return;
+                    }
+                    userDao.updateChangePass(passTxt, userName);
+                } catch (SQLException exception) {
+                    exception.printStackTrace();
+                }
                 JOptionPane.showMessageDialog(btnSearch, "Password has been successfully changed for the user " + userName);
                 dispose();
             }
