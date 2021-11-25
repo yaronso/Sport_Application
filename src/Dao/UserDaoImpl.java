@@ -16,10 +16,11 @@ public class UserDaoImpl implements UserDao {
     private static final String INSERT_TO_USERS = "INSERT INTO users(first_name, last_name, user_name, password, email_id, mobile_number) VALUES(?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_CHANGE_PASSWORD = "UPDATE users set password=? where user_name=?";
     private static final String USER_LOGIN = "Select user_name, password from users where user_name=? and password=?";
+    private static final String CHECK_PW = "Select password from users where user_name=?";
 
     // CTR
     public UserDaoImpl() throws IOException {
-        String[] propertiesArray = getJDBCProperties();
+        String[] propertiesArray = Utils.PropertiesReaders.getJDBCProperties();
         DB_DRIVER = propertiesArray[0];
         DB_URL = propertiesArray[1];
         DB_USER = propertiesArray[2];
@@ -56,18 +57,6 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    private String[] getJDBCProperties() throws IOException {
-        String[] propertiesArray = new String[5];
-        Properties props = new Properties();
-        String dbSettingsPropertyFile = "src/Config/jdbc.properties";
-        FileReader fReader = new FileReader(dbSettingsPropertyFile);
-        props.load(fReader);
-        propertiesArray[0] = props.getProperty("db.driver.class");
-        propertiesArray[1] = props.getProperty("db.conn.url");
-        propertiesArray[2] = props.getProperty("db.username");
-        propertiesArray[3] = props.getProperty("db.password");
-        return propertiesArray;
-    }
 
     public int insert(User user) throws SQLException {
         Connection connection = null;
@@ -139,6 +128,34 @@ public class UserDaoImpl implements UserDao {
         }
         return false;
     }
+
+    @Override
+    public String validPassword(String userName) throws SQLException {
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String currPassword = null;
+        try {
+            connection = getConnection();
+            stmt = connection.prepareStatement(CHECK_PW);
+            stmt.setString(1, userName);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                currPassword = rs.getString(1);
+                System.out.println(currPassword);
+            }
+            return currPassword;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return currPassword;
+        } finally {
+            close(stmt);
+            close(connection);
+            assert rs != null;
+            rs.close();
+        }
+    }
+
 
 
 }

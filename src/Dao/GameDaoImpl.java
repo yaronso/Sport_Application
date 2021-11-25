@@ -2,12 +2,10 @@ package Dao;
 
 import Models.Game;
 import javax.swing.table.DefaultTableModel;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Properties;
 
 
 public class GameDaoImpl implements GameDao {
@@ -18,8 +16,11 @@ public class GameDaoImpl implements GameDao {
     private final String DB_PASSWORD;
     // Sql Queries:
     // Insert statements:
-    private static final String INSERT_GAME_DETAILS = "INSERT INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_GAME_DETAILS = "INSERT IGNORE INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String INSERT_MATCH_GAMES = "INSERT IGNORE INTO match_games(user_name, game_name, creation_date, participant) VALUES(?, ?, ?, ?)";
+    private static final String INSERT_SELECT_ZERO_GAME = "INSERT IGNORE INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) " +
+                                                            "SELECT user_name, game_name, game_date, creation_date, city, sport_category, players + 1, level " +
+                                                                " FROM game_details_archives WHERE game_name=?";
 
     // SET FOREIGN_KEY_CHECKS Statement:
     private static final String SET_FOREIGN_KEY_CHECKS = "SET FOREIGN_KEY_CHECKS = ?";
@@ -97,6 +98,7 @@ public class GameDaoImpl implements GameDao {
 
     // Update Statements:
     private static final String UPDATE_GAME_LEVEL = "UPDATE game_details SET players = ? WHERE game_name = ?";
+    private static final String UPDATE_USING_ARCHIVE = "UPDATE game_details SET players = (SELECT )";
     private static final String FIND_GAME_CURR_ROW = "SELECT game_name FROM game_details\n" +
                                                         "ORDER BY unix_timestamp(game_date)\n" +
                                                             "LIMIT ?, 1";
@@ -107,7 +109,7 @@ public class GameDaoImpl implements GameDao {
 
 
     public GameDaoImpl() throws IOException {
-        String[] propertiesArray = getJDBCProperties();
+        String[] propertiesArray = Utils.PropertiesReaders.getJDBCProperties();
         DB_DRIVER = propertiesArray[0];
         DB_URL = propertiesArray[1];
         DB_USER = propertiesArray[2];
@@ -147,38 +149,33 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-    public String[] getJDBCProperties() throws IOException {
-        String[] propertiesArray = new String[5];
-        Properties props = new Properties();
-        String dbSettingsPropertyFile = "src/Config/jdbc.properties";
-        FileReader fReader = new FileReader(dbSettingsPropertyFile);
-        props.load(fReader);
-        propertiesArray[0] = props.getProperty("db.driver.class");
-        propertiesArray[1] = props.getProperty("db.conn.url");
-        propertiesArray[2] = props.getProperty("db.username");
-        propertiesArray[3] = props.getProperty("db.password");
-        return propertiesArray;
-    }
 
     @Override
-    public Boolean deleteFromMatchGames(String participant, String gameName) {
+    public Boolean deleteFromMatchGames(String participant, String gameName) throws SQLException {
         Connection connection = null;
-        PreparedStatement deleteStmt = null;
-        try {
-            // DELETE_FROM_MATCH_TABLE = "DELETE FROM match_games WHERE participant=? AND game_name= ?";
+        PreparedStatement Stmt = null;
+        try { // Transactional Function.
             connection = getConnection();
-            deleteStmt = connection.prepareStatement(DELETE_FROM_MATCH_TABLE);
-            deleteStmt.setString(1, participant);
-            deleteStmt.setString(2, gameName);
-            System.out.println(deleteStmt);
-            deleteStmt.execute();
-            return true;
+            connection.setAutoCommit(false);
+            Stmt = connection.prepareStatement(DELETE_FROM_MATCH_TABLE);
+            Stmt.setString(1, participant);
+            Stmt.setString(2, gameName);
+            System.out.println(Stmt);
+            Stmt.execute();
+            if(getCurrNumPlayersAndUpdatePlayers(connection, Stmt, gameName)) {
+                connection.commit(); // If there is no error.
+                return true;
+            } else {
+                connection.rollback(); // If there is any error.
+                return false;
+            }
         } catch (SQLException throwables) {
+            connection.rollback(); // If there is any error.
             throwables.printStackTrace();
             return false;
         } finally {
             close(connection);
-            close(deleteStmt);
+            close(Stmt);
         }
     }
 
@@ -245,7 +242,6 @@ public class GameDaoImpl implements GameDao {
     }
 
 
-
     // "SELECT distinct t1.user_name, t1.game_name, t1.sport_category, t1.game_date, t3.country_name, t1.city, t1.players, t1.level\n" +
     @Override
     public DefaultTableModel findAllGames() throws SQLException {
@@ -287,6 +283,7 @@ public class GameDaoImpl implements GameDao {
             stmt = conn.prepareStatement(GET_ALL_GAME_MATCHES);
             stmt.setString(1, userName);
             rs = stmt.executeQuery();
+            System.out.println(stmt);
             while (rs.next()) {
                 String user_name = rs.getString(1);
                 String game_name = rs.getString(2);
@@ -455,85 +452,211 @@ public class GameDaoImpl implements GameDao {
 
 
     @Override
-    public int insertGameDetails(String userName, Game game) {
+    public boolean insertGameDetails(String userName, Game game) throws SQLException {
         Connection conn = null;
         PreparedStatement stmt = null;
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss");
-        try {
+        try { // Transactional Function.
             conn = getConnection();
-            // "INSERT INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+            conn.setAutoCommit(false);
+            // "INSERT IGNORE INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(INSERT_GAME_DETAILS, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, userName);
             stmt.setString(2, game.getGameName());
             stmt.setString(3, game.getDate());
-            stmt.setString(4, dtf.format(LocalDateTime.now()));
+            LocalDateTime creationDate = LocalDateTime.now();
+            stmt.setString(4, dtf.format(creationDate));
             stmt.setString(5, game.getCity());
             stmt.setString(6, game.getSportCategory());
             stmt.setInt(7, game.getNumOfPlayers());
             stmt.setInt(8, game.getLevelOfPlayers());
             System.out.println(stmt);
-            int result = stmt.executeUpdate();
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                game.setGameName(rs.getString(1));
-            }
-            return result;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            close(stmt);
-            close(conn);
-        }
-    }
-
-    // "INSERT IGNORE INTO match_games(user_name, game_name, creation_date, participant) VALUES(?, ?, ?, ?)";
-    @Override
-    public int insertToMatchGameTable(String userName, String gameName, String creationDate, String participant) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = getConnection();
-            stmt = conn.prepareStatement(INSERT_MATCH_GAMES, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, userName);
-            stmt.setString(2, gameName);
-            stmt.setString(3, creationDate);
-            stmt.setString(4, participant);
-            System.out.println(stmt);
-            int result = stmt.executeUpdate();
-            return result;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } finally {
-            close(stmt);
-            close(conn);
-        }
-    }
-
-    @Override
-    public boolean updateGameLevel(String gameName, int gameNumOfPlayers, String flag) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = getConnection();
-            System.out.println(gameNumOfPlayers);
-            stmt = conn.prepareStatement(UPDATE_GAME_LEVEL);
-            if (flag.equals("DownLevel")) {
-                stmt.setInt(1, gameNumOfPlayers - 1);
+            stmt.executeUpdate();
+            if(insertToMatchGameTable(conn, stmt, userName, game.getGameName(), dtf.format(creationDate), userName)) {
+                conn.commit(); // If there is no error.
+                return true;
             } else {
-                stmt.setInt(1, gameNumOfPlayers + 1);
+                conn.rollback(); // If there is any error.
+                return false;
             }
-            stmt.setString(2, gameName);
-            System.out.println(stmt);
-            return stmt.execute();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException e) {
+            conn.rollback(); // If there is any error.
             return false;
         } finally {
             close(stmt);
             close(conn);
         }
     }
+
+
+    @Override
+    public boolean insertToMatchGameTableAndDownPlayers(String userName, String gameName, String creationDate, String participant, int gameNumOfPlayers) throws SQLException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try { // Transactional Function.
+            conn = getConnection();
+            conn.setAutoCommit(false);
+            stmt = conn.prepareStatement(INSERT_MATCH_GAMES, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, userName);
+            stmt.setString(2, gameName);
+            stmt.setString(3, creationDate);
+            stmt.setString(4, participant);
+            System.out.println(stmt);
+            stmt.executeUpdate();
+            if(updateGameLevel(conn, stmt, gameName, gameNumOfPlayers, "DownPlayer")) {
+                conn.commit(); // If there is no error.
+                return true;
+            } else {
+                conn.rollback(); // If there is any error.
+                return false;
+            }
+        } catch (SQLException e) {
+            conn.rollback(); // If there is any error.
+            return false;
+        } finally {
+            close(stmt);
+            close(conn);
+        }
+    }
+
+    @Override
+    public boolean getCurrNumPlayersAndUpdatePlayers(Connection conn, PreparedStatement stmt, String gameName)  {
+        ResultSet rs;
+        int players = -1;
+        try {
+            stmt = conn.prepareStatement(FIND_NUM_OF_PLAYERS_GAME);
+            stmt.setString(1, gameName);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                players = rs.getInt(1);
+            }
+            if(updateGameLevel(conn, stmt, gameName,  players, "UpPlayer")) { // Up the number of players
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+    }
+
+
+    @Override
+    public boolean insertToMatchGameTable(Connection connection, PreparedStatement stmt, String userName, String gameName, String creationDate, String participant) {
+        try {
+            stmt = connection.prepareStatement(INSERT_MATCH_GAMES, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, userName);
+            stmt.setString(2, gameName);
+            stmt.setString(3, creationDate);
+            stmt.setString(4, participant);
+            System.out.println(stmt);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+
+    @Override
+    public boolean updateGameLevel(Connection connection, PreparedStatement stmt, String gameName, int gameNumOfPlayers, String flag) {
+        boolean isPlayersZero = false;
+        boolean isGameBack = false;
+        try { // "UPDATE game_details SET players = ? WHERE game_name = ?";
+            stmt = connection.prepareStatement(UPDATE_GAME_LEVEL);
+            if (flag.equals("DownPlayer") && gameNumOfPlayers >= 0) {
+                stmt.setInt(1, gameNumOfPlayers - 1);
+                System.out.println("gameNumOfPlayers - 1 = " + (gameNumOfPlayers - 1));
+                isPlayersZero = gameNumOfPlayers - 1 == 0;
+            } else if (flag.equals("UpPlayer") && gameNumOfPlayers >= -1) {
+                stmt.setInt(1, gameNumOfPlayers + 1);
+                System.out.println("gameNumOfPlayers + 1 = " + gameNumOfPlayers + 1);
+                isGameBack = gameNumOfPlayers + 1 == 0;
+            }
+            stmt.setString(2, gameName);
+            System.out.println(stmt);
+            stmt.execute();
+            if (isPlayersZero) { // If the number of players in game_details is zero delete this game from game_details and alert the creator user!
+                if(removeGameFromGameDetails(connection, stmt, gameName)) { /* Store the game details before deleting it using BEFORE DELETE TRIGGER. */
+                    System.out.println("BEFORE DELETE Trigger - game is zero"); // 	Debug print
+                    return true;
+                } else {
+                    return false;
+                }
+            } if (isGameBack) { // Insert the game back to game details.
+                if(retrieveTheArchivedGame(connection, stmt, gameName)) {
+                    System.out.println("GameBack"); // 	Debug print
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return true;
+        } catch (SQLException ex) {
+            return false;
+        }
+    }
+
+
+    private boolean retrieveTheArchivedGame(Connection connection, PreparedStatement stmt, String gameName) throws SQLException {
+        try {
+            stmt = connection.prepareStatement(INSERT_SELECT_ZERO_GAME, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, gameName);
+            System.out.println(stmt);
+            stmt.executeUpdate(); 
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+
+    private boolean removeGameFromGameDetails(Connection connection, PreparedStatement stmt, String gameName) {
+        PreparedStatement foreignStmt;
+        try { // Using BEFORE DELETE TRIGGER
+            connection.createStatement().execute("DROP TRIGGER IF EXISTS `before_delete_game`");
+            StringBuilder triggerBuilder = new StringBuilder();
+            triggerBuilder.append(" CREATE TRIGGER before_delete_game BEFORE DELETE ON game_details ");
+            triggerBuilder.append(" FOR EACH ROW Begin ");
+            triggerBuilder.append(" INSERT INTO game_details_archives(user_name , game_name , game_date , creation_date , city ,  sport_category , players , level ) " );
+            triggerBuilder.append("VALUES");
+            triggerBuilder.append(" ( " );
+            triggerBuilder.append(" OLD.user_name , ");
+            triggerBuilder.append(" OLD.game_name , " );
+            triggerBuilder.append(" OLD.game_date , " );
+            triggerBuilder.append(" OLD.creation_date , " );
+            triggerBuilder.append(" OLD.city , " );
+            triggerBuilder.append(" OLD.sport_category , " );
+            triggerBuilder.append(" OLD.players , " );
+            triggerBuilder.append(" OLD.level " );
+            triggerBuilder.append(" ) ; ");
+            triggerBuilder.append(" END ");
+            System.out.println(triggerBuilder.toString());
+            connection.createStatement().execute(triggerBuilder.toString());
+            
+            foreignStmt = connection.prepareStatement(SET_FOREIGN_KEY_CHECKS);
+            foreignStmt.setInt(1, 0);
+            System.out.println(foreignStmt);
+            foreignStmt.execute();
+
+            stmt = connection.prepareStatement(DELETE_GAME);
+            stmt.setString(1, gameName);
+            System.out.println(stmt);
+            stmt.execute();
+
+            foreignStmt = connection.prepareStatement(SET_FOREIGN_KEY_CHECKS);
+            foreignStmt.setInt(1, 1);
+            System.out.println(foreignStmt);
+            foreignStmt.execute();
+
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+    }
+
 
     @Override
     public boolean updateGameFullDetails(Game game, String oldGame) {
@@ -574,29 +697,5 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-    @Override
-    public int getCurrNumPlayers(String gameName) throws SQLException {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        int level = -1;
-        try {
-            conn = getConnection();
-            stmt = conn.prepareStatement(FIND_NUM_OF_PLAYERS_GAME);
-            stmt.setString(1, gameName);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                level = rs.getInt(1);
-            }
-            return level;
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return level;
-        } finally {
-            close(stmt);
-            close(conn);
-            rs.close();
-        }
-    }
 }
 
