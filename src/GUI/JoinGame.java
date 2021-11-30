@@ -3,8 +3,6 @@ package GUI;
 import Dao.GameDao;
 import Dao.GameDaoImpl;
 import Models.Game;
-import com.mysql.cj.util.Util;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
@@ -12,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.sql.SQLException;
+
 
 public class JoinGame extends JFrame {
 
@@ -528,7 +527,9 @@ public class JoinGame extends JFrame {
             // The delete query can be only executed by the user who created the game
             if (userName.equals(currUser)) {
                 String gameName = jTable.getValueAt(currRow, 1).toString();
-                if (gameDao.deleteGame(gameName)) {
+                String creationDate = jTable.getValueAt(currRow, 8).toString();
+                System.out.println(creationDate);
+                if (gameDao.deleteGame(gameName, creationDate)) {
                     JOptionPane.showMessageDialog(null, "Deleted Updated");
                     gameNameTxt.setText("");
                     sportCategoryTxt.setText("");
@@ -538,6 +539,7 @@ public class JoinGame extends JFrame {
                     playersTxt.setText("");
                     levelTxt.setText("");
                     retrieve(gameDao);
+                    retrieveMatches(gameDao, userName);
                 } else {
                     JOptionPane.showMessageDialog(null, "The game was not deleted");
                 }
