@@ -26,8 +26,9 @@ public class GameDaoImpl implements GameDao {
     private static final String SET_FOREIGN_KEY_CHECKS = "SET FOREIGN_KEY_CHECKS = ?";
 
     // Delete statement:
-    private static final String DELETE_GAME =  "DELETE FROM game_details WHERE game_name = ?";
+    private static final String DELETE_GAME =  "DELETE FROM game_details WHERE game_name = ? AND creation_date = ?";
     private static final String DELETE_FROM_MATCH_TABLE = "DELETE FROM match_games WHERE participant=? AND game_name=?";
+    private static final String DELETE_GAME_FROM_ALL_MATCH_TABLES = "DELETE FROM match_games WHERE game_name = ? AND creation_date = ?";
 
     // Select statements:
     private static final String FIND_NUM_OF_PLAYERS_GAME = "SELECT players FROM game_details WHERE game_name = ?";
@@ -180,12 +181,13 @@ public class GameDaoImpl implements GameDao {
     }
 
     @Override
-    public Boolean deleteGame(String gameName) {
+    public Boolean deleteGame(String gameName, String creationDate) throws SQLException {
         Connection connection = null;
         PreparedStatement foreignStmt = null;
         PreparedStatement deleteStmt = null;
-        try {
+        try { // Transactional Function.
             connection = getConnection();
+            connection.setAutoCommit(false);
             foreignStmt = connection.prepareStatement(SET_FOREIGN_KEY_CHECKS);
             foreignStmt.setInt(1, 0);
             System.out.println(foreignStmt);
@@ -193,6 +195,7 @@ public class GameDaoImpl implements GameDao {
 
             deleteStmt = connection.prepareStatement(DELETE_GAME);
             deleteStmt.setString(1, gameName);
+            deleteStmt.setString(2, creationDate);
             System.out.println(deleteStmt);
             deleteStmt.execute();
 
@@ -200,15 +203,35 @@ public class GameDaoImpl implements GameDao {
             foreignStmt.setInt(1, 1);
             System.out.println(foreignStmt);
             foreignStmt.execute();
-
-            return true;
+            if(deleteAllGameMatches(connection, deleteStmt, gameName, creationDate)) {
+                connection.commit();
+                return true;
+            } else {
+                connection.rollback();
+                return false;
+            }
         } catch (SQLException throwables) {
+            connection.rollback(); // If there is any error.
             throwables.printStackTrace();
             return false;
         } finally {
             close(connection);
             close(foreignStmt);
             close(deleteStmt);
+        }
+    }
+
+    private boolean deleteAllGameMatches(Connection connection, PreparedStatement stmt, String gameName, String creationDate) {
+        try {
+            stmt = connection.prepareStatement(DELETE_GAME_FROM_ALL_MATCH_TABLES);
+            stmt.setString(1, gameName);
+            stmt.setString(2, creationDate);
+            System.out.println(stmt);
+            stmt.execute();
+            return true;
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
         }
     }
 
@@ -503,7 +526,7 @@ public class GameDaoImpl implements GameDao {
             stmt.setString(4, participant);
             System.out.println(stmt);
             stmt.executeUpdate();
-            if(updateGameLevel(conn, stmt, gameName, gameNumOfPlayers, "DownPlayer")) {
+            if(updateGameLevel(conn, stmt, gameName, gameNumOfPlayers, "DownPlayer", creationDate)) {
                 conn.commit(); // If there is no error.
                 return true;
             } else {
@@ -519,6 +542,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+
     @Override
     public boolean getCurrNumPlayersAndUpdatePlayers(Connection conn, PreparedStatement stmt, String gameName)  {
         ResultSet rs;
@@ -530,7 +554,7 @@ public class GameDaoImpl implements GameDao {
             while (rs.next()) {
                 players = rs.getInt(1);
             }
-            if(updateGameLevel(conn, stmt, gameName,  players, "UpPlayer")) { // Up the number of players
+            if(updateGameLevel(conn, stmt, gameName,  players, "UpPlayer", null)) { // Up the number of players
                 return true;
             } else {
                 return false;
@@ -560,7 +584,7 @@ public class GameDaoImpl implements GameDao {
 
 
     @Override
-    public boolean updateGameLevel(Connection connection, PreparedStatement stmt, String gameName, int gameNumOfPlayers, String flag) {
+    public boolean updateGameLevel(Connection connection, PreparedStatement stmt, String gameName, int gameNumOfPlayers, String flag, String creationDate) {
         boolean isPlayersZero = false;
         boolean isGameBack = false;
         try { // "UPDATE game_details SET players = ? WHERE game_name = ?";
@@ -578,7 +602,7 @@ public class GameDaoImpl implements GameDao {
             System.out.println(stmt);
             stmt.execute();
             if (isPlayersZero) { // If the number of players in game_details is zero delete this game from game_details and alert the creator user!
-                if(removeGameFromGameDetails(connection, stmt, gameName)) { /* Store the game details before deleting it using BEFORE DELETE TRIGGER. */
+                if(removeGameFromGameDetails(connection, stmt, gameName, creationDate)) { /* Store the game details before deleting it using BEFORE DELETE TRIGGER. */
                     System.out.println("BEFORE DELETE Trigger - game is zero"); // 	Debug print
                     return true;
                 } else {
@@ -612,7 +636,7 @@ public class GameDaoImpl implements GameDao {
     }
 
 
-    private boolean removeGameFromGameDetails(Connection connection, PreparedStatement stmt, String gameName) {
+    private boolean removeGameFromGameDetails(Connection connection, PreparedStatement stmt, String gameName, String creationDate) {
         PreparedStatement foreignStmt;
         try { // Using BEFORE DELETE TRIGGER
             connection.createStatement().execute("DROP TRIGGER IF EXISTS `before_delete_game`");
@@ -642,6 +666,7 @@ public class GameDaoImpl implements GameDao {
 
             stmt = connection.prepareStatement(DELETE_GAME);
             stmt.setString(1, gameName);
+            stmt.setString(2, creationDate);
             System.out.println(stmt);
             stmt.execute();
 
