@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.util.Properties;
 
 // The client class.
-public class WorkerRunnable implements Runnable {
+public class WorkerRunnableTwo implements Runnable {
     protected Socket clientSocket;
     // CTR
-    public WorkerRunnable(Socket clientSocket) throws IOException {
+    public WorkerRunnableTwo(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
     }
 
