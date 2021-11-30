@@ -25,7 +25,10 @@ public class Database implements IDataBase {
         DB_URL = propertiesArray[1];
         DB_USER = propertiesArray[2];
         DB_PASSWORD = propertiesArray[3];
-
+        System.out.println(DB_DRIVER);
+        System.out.println(DB_URL);
+        System.out.println(DB_USER);
+        System.out.println(DB_PASSWORD);
     }
 
     // Implements the Singleton DP.
@@ -135,7 +138,7 @@ public class Database implements IDataBase {
     }
 
     public void loadDataSet() throws ScriptException, IOException, InterruptedException {
-        createCostumeCsv();
+        /*createCostumeCsv();
         System.out.println("Loading the data set csv file...");
         String csvFilePath1 = ".\\src\\DataBase\\countries_data.csv";
         String csvFilePath2 = ".\\src\\DataBase\\removed.csv";
@@ -144,7 +147,7 @@ public class Database implements IDataBase {
         String sql2 = "INSERT INTO cities (city_name, country_id) VALUES (?, ?)";
 
         insertDb(sql1, csvFilePath1,20 );
-        insertDb(sql2, csvFilePath2,20 );
+        insertDb(sql2, csvFilePath2,20 );*/
     }
 
     public void createCostumeCsv() throws ScriptException, IOException{
