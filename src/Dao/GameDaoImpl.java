@@ -14,6 +14,7 @@ public class GameDaoImpl implements GameDao {
     private final String DB_URL;
     private final String DB_USER;
     private final String DB_PASSWORD;
+    private final String DB_NAME;
     // Sql Queries:
     // Insert statements:
     private static final String INSERT_GAME_DETAILS = "INSERT IGNORE INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
@@ -32,6 +33,8 @@ public class GameDaoImpl implements GameDao {
 
     // Select statements:
     private static final String FIND_NUM_OF_PLAYERS_GAME = "SELECT players FROM game_details WHERE game_name = ?";
+    private static final String IS_COUNTRY_EXISTS = "SELECT country_name FROM countries WHERE country_name = ?";
+    private static final String IS_CITY_EXISTS = "SELECT city_name FROM cities WHERE city_name = ?";
 
     private static final String FIND_ALL_GAMES = "SELECT distinct t1.user_name, t1.game_name, t1.sport_category, t3.country_name, t1.city, t1.game_date, t1.players, t1.level, t1.creation_date\n" +
                 "         FROM game_details as t1\n" +
@@ -99,14 +102,16 @@ public class GameDaoImpl implements GameDao {
 
     // Update Statements:
     private static final String UPDATE_GAME_LEVEL = "UPDATE game_details SET players = ? WHERE game_name = ?";
-    private static final String UPDATE_USING_ARCHIVE = "UPDATE game_details SET players = (SELECT )";
+
     private static final String FIND_GAME_CURR_ROW = "SELECT game_name FROM game_details\n" +
                                                         "ORDER BY unix_timestamp(game_date)\n" +
                                                             "LIMIT ?, 1";
 
-    // TODO - should update the country last
+
     private static final String UPDATE_GAME_DETAILS = "UPDATE game_details SET game_name = ?, game_date = ?, city = ? ,sport_category = ?, " +
                                                         "players = ?, level =? WHERE game_name = ?";
+
+    private static final String UPDATE_MATCH_GAMES = "UPDATE match_games SET game_name = ? WHERE game_name = ?";
 
 
     public GameDaoImpl() throws IOException {
@@ -115,6 +120,7 @@ public class GameDaoImpl implements GameDao {
         DB_URL = propertiesArray[1];
         DB_USER = propertiesArray[2];
         DB_PASSWORD = propertiesArray[3];
+        DB_NAME = propertiesArray[4];
     }
 
 
@@ -122,7 +128,7 @@ public class GameDaoImpl implements GameDao {
     public Connection getConnection() {
         try {
             Class.forName(DB_DRIVER);
-            return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            return DriverManager.getConnection(DB_URL + DB_NAME, DB_USER, DB_PASSWORD);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -584,6 +590,38 @@ public class GameDaoImpl implements GameDao {
 
 
     @Override
+    public boolean isCountryOrCityValid(String input, String flag) throws SQLException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Connection connection = null;
+        boolean isExists = false;
+        try {
+            connection = getConnection();
+            if(flag.equals("country")) {
+                stmt = connection.prepareStatement(IS_COUNTRY_EXISTS);
+            } else {
+                stmt = connection.prepareStatement(IS_CITY_EXISTS);
+            }
+            stmt.setString(1, input);
+            System.out.println(stmt);
+            rs =  stmt.executeQuery();
+            while(rs.next()){
+                isExists = true;
+            }
+            return isExists;
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode());
+            return false;
+        } finally {
+            close(connection);
+            close(stmt);
+            assert rs != null;
+            rs.close();
+        }
+    }
+
+
+    @Override
     public boolean updateGameLevel(Connection connection, PreparedStatement stmt, String gameName, int gameNumOfPlayers, String flag, String creationDate) {
         boolean isPlayersZero = false;
         boolean isGameBack = false;
@@ -591,11 +629,9 @@ public class GameDaoImpl implements GameDao {
             stmt = connection.prepareStatement(UPDATE_GAME_LEVEL);
             if (flag.equals("DownPlayer") && gameNumOfPlayers >= 0) {
                 stmt.setInt(1, gameNumOfPlayers - 1);
-                System.out.println("gameNumOfPlayers - 1 = " + (gameNumOfPlayers - 1));
                 isPlayersZero = gameNumOfPlayers - 1 == 0;
             } else if (flag.equals("UpPlayer") && gameNumOfPlayers >= -1) {
                 stmt.setInt(1, gameNumOfPlayers + 1);
-                System.out.println("gameNumOfPlayers + 1 = " + gameNumOfPlayers + 1);
                 isGameBack = gameNumOfPlayers + 1 == 0;
             }
             stmt.setString(2, gameName);
@@ -684,18 +720,18 @@ public class GameDaoImpl implements GameDao {
 
 
     @Override
-    public boolean updateGameFullDetails(Game game, String oldGame) {
+    public boolean updateGameFullDetails(Game game, String oldGame) throws SQLException {
         Connection conn = null;
         PreparedStatement foreignStmt = null;
         PreparedStatement gameDetailsUpdateStmt = null;
         try {
             conn = getConnection();
+            conn.setAutoCommit(false);
             foreignStmt = conn.prepareStatement(SET_FOREIGN_KEY_CHECKS); // SET_FOREIGN_KEY_CHECKS
             foreignStmt.setInt(1, 0);
             System.out.println(foreignStmt);
             foreignStmt.execute();
 
-            // UPDATE_GAME_DETAILS = "UPDATE game_details SET game_name = ?, game_date = ?, city = ? ,sport_category = ?, players = ?, level =? WHERE game_name = ?";
             gameDetailsUpdateStmt = conn.prepareStatement(UPDATE_GAME_DETAILS);
             gameDetailsUpdateStmt.setString(1, game.getGameName());
             gameDetailsUpdateStmt.setString(2, game.getDate());
@@ -711,14 +747,34 @@ public class GameDaoImpl implements GameDao {
             foreignStmt.setInt(1, 1);
             System.out.println(foreignStmt);
             foreignStmt.execute();
-            return true;
+            if (updateMatchGames(conn, gameDetailsUpdateStmt, game.getGameName(), oldGame)) { // Update the game name in match_games table
+                conn.commit();
+                return true;
+            } else {
+                conn.rollback();
+                return false;
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
+            conn.rollback();
             return false;
         } finally {
             close(foreignStmt);
             close(gameDetailsUpdateStmt);
             close(conn);
+        }
+    }
+
+    private boolean updateMatchGames(Connection conn, PreparedStatement stmt, String gameName, String oldGame) {
+        try {
+            stmt = conn.prepareStatement(UPDATE_MATCH_GAMES);
+            stmt.setString(1, gameName);
+            stmt.setString(2, oldGame);
+            System.out.println(stmt);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            return false;
         }
     }
 

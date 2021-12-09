@@ -21,7 +21,8 @@ public interface GameDao {
     boolean insertGameDetails(String userName, Game game) throws SQLException;
     boolean insertToMatchGameTableAndDownPlayers(String userName, String gameName, String creationDate, String participant, int i) throws SQLException;
     boolean updateGameLevel(Connection connection, PreparedStatement stmt, String gameName, int gameNumOfPlayers, String flag, String creationDate);
-    boolean updateGameFullDetails(Game game, String oldGame);
+    boolean updateGameFullDetails(Game game, String oldGame) throws SQLException;
     boolean getCurrNumPlayersAndUpdatePlayers(Connection conn, PreparedStatement stmt, String gameName) throws SQLException;
     boolean insertToMatchGameTable(Connection connection, PreparedStatement stmt, String userName, String gameName, String creationDate, String participant);
+    boolean isCountryOrCityValid(String input, String flag) throws SQLException;
 }

@@ -12,6 +12,7 @@ public class UserDaoImpl implements UserDao {
     private final String DB_URL;
     private final String DB_USER;
     private final String DB_PASSWORD;
+    private final String DB_NAME;
     // SQL statements:
     private static final String INSERT_TO_USERS = "INSERT INTO users(first_name, last_name, user_name, password, email_id, mobile_number) VALUES(?, ?, ?, ?, ?, ?)";
     private static final String UPDATE_CHANGE_PASSWORD = "UPDATE users set password=? where user_name=?";
@@ -25,13 +26,14 @@ public class UserDaoImpl implements UserDao {
         DB_URL = propertiesArray[1];
         DB_USER = propertiesArray[2];
         DB_PASSWORD = propertiesArray[3];
+        DB_NAME = propertiesArray[4];
     }
 
 
     private Connection getConnection() {
         try {
             Class.forName(DB_DRIVER);
-            return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            return DriverManager.getConnection(DB_URL + DB_NAME, DB_USER, DB_PASSWORD);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

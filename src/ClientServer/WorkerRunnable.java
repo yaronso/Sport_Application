@@ -18,7 +18,6 @@ public class WorkerRunnable implements Runnable {
         this.clientSocket = clientSocket;
     }
 
-
     @Override
     public void run() {
         EventQueue.invokeLater(new Runnable() {
@@ -46,8 +45,8 @@ public class WorkerRunnable implements Runnable {
 
     public static void main(String[] args) throws IOException {
         String[] transportProps = Utils.PropertiesReaders.getTransportProperties();
-        System.out.println("server.host: " + transportProps[0]); // Debug
-        System.out.println("server.port: " + Integer.parseInt(transportProps[1])); // Debug
+        System.out.println("server.host: " + transportProps[0]); // Debug print
+        System.out.println("server.port: " + Integer.parseInt(transportProps[1])); // Debug print
         Socket clientSocket = new Socket(transportProps[0], Integer.parseInt(transportProps[1]));
         WorkerRunnable workerRunnable = new WorkerRunnable(clientSocket);
         workerRunnable.run();

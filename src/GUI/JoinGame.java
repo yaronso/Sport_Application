@@ -428,7 +428,6 @@ public class JoinGame extends JFrame {
         String userName = jTable1.getValueAt(currRow, 0).toString();
         String creationDate = jTable1.getValueAt(currRow, 8).toString();
         // TODO - check the user does not have this match game in its table!
-        // TODO - If the number of players in game_details is zero delete this game from game_details and alert the creator user!
         if(gameDao.insertToMatchGameTableAndDownPlayers(userName, gameNameTxt.getText(), creationDate, participant, Integer.parseInt(playersTxt.getText()))) { // Transactional Function.
             JOptionPane.showMessageDialog(null, "Successfully joined.");
         } else {
@@ -452,12 +451,19 @@ public class JoinGame extends JFrame {
         String date = dateTxt.getText();
         String players = playersTxt.getText();
         String level = levelTxt.getText();
-        if(Utils.PropertiesReaders.isAnyObjectNull(gameName, category, country, city, date, players, level)) {
+        if (Utils.PropertiesReaders.isAnyObjectNull(gameName, category, country, city, date, players, level)) {
             JOptionPane.showMessageDialog(addBtn, "Add game error: You must fill all the game details.");
             return;
         }
+        if (!gameDao.isCountryOrCityValid(country, "country")) { // Verify that the input country exists in the DB.
+            JOptionPane.showMessageDialog(addBtn, "Add game error: Please choose a country that exists.");
+            return;
+        } if (!gameDao.isCountryOrCityValid(city, "city")) { // Verify that the input city exists in the DB.
+            JOptionPane.showMessageDialog(addBtn, "Add game error: Please choose a city that exists.");
+            return;
+        }
         Game game = new Game(gameName, category, country, city, date, Integer.parseInt(players), Integer.parseInt(level));
-        if(gameDao.insertGameDetails(userName, game)) { // Transactional.
+        if (gameDao.insertGameDetails(userName, game)) { // Transactional.
             JOptionPane.showMessageDialog(addBtn, "Add Game Succeeded.");
             retrieve(gameDao);
             retrieveMatches(gameDao, userName);
@@ -492,19 +498,29 @@ public class JoinGame extends JFrame {
             JOptionPane.showMessageDialog(updateBtn, "Update Game Error: You must choose a game from the entire games list to update.");
             return;
         }
+        String country = countryTxt.getText();
+        String city = cityTxt.getText();
+        if (!gameDao.isCountryOrCityValid(country, "country")) { // Verify that the input country exists in the DB.
+            JOptionPane.showMessageDialog(updateBtn, "Update game error: Please choose a country that exists.");
+            return;
+        } if (!gameDao.isCountryOrCityValid(city, "city")) { // Verify that the input city exists in the DB.
+            JOptionPane.showMessageDialog(updateBtn, "Update game error: Please choose a city that exists.");
+            return;
+        }
         String userName = jTable1.getValueAt(currRow, 0).toString();
         // The update query can be only executed by the user who created the game
         if (userName.equals(participant)) {
             System.out.println("currRow selected is " + currRow);
             Game game = new Game(gameNameTxt.getText(), sportCategoryTxt.getText(), countryTxt.getText(), cityTxt.getText(), dateTxt.getText(), Integer.parseInt(playersTxt.getText()), Integer.parseInt(levelTxt.getText()));
             String oldGameName = gameDao.findColumnRow(currRow, "GameName"); // Cursor: The game that the user want to update/replace
-            if(gameDao.updateGameFullDetails(game, oldGameName)) {
+            if(gameDao.updateGameFullDetails(game, oldGameName)) { // Transactional.
                 JOptionPane.showMessageDialog(null, "Game details were updated");
                 // Clear the text fields
                 gameNameTxt.setText("");
                 sportCategoryTxt.setText("");
                 countryTxt.setText("");
                 retrieve(gameDao);
+                retrieveMatches(gameDao, userName);
             } else {
                 JOptionPane.showMessageDialog(null, "Update Error: General error was occurred in update.");
             }

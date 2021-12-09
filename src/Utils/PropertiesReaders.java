@@ -16,6 +16,7 @@ public class PropertiesReaders {
         propertiesArray[1] = props.getProperty("db.conn.url");
         propertiesArray[2] = props.getProperty("db.username");
         propertiesArray[3] = props.getProperty("db.password");
+        propertiesArray[4] = props.getProperty("db.name");
         return propertiesArray;
     }
 
