@@ -18,6 +18,7 @@ public class Database implements IDataBase {
     private static String DB_URL;
     private static String DB_USER;
     private static String DB_PASSWORD;
+    private static String DB_NAME;
 
     private Database() throws IOException {
         this.propertiesArray = Utils.PropertiesReaders.getJDBCProperties();
@@ -25,10 +26,12 @@ public class Database implements IDataBase {
         DB_URL = propertiesArray[1];
         DB_USER = propertiesArray[2];
         DB_PASSWORD = propertiesArray[3];
+        DB_NAME = propertiesArray[4];
         System.out.println(DB_DRIVER);
         System.out.println(DB_URL);
         System.out.println(DB_USER);
         System.out.println(DB_PASSWORD);
+        System.out.println(DB_NAME);
     }
 
     // Implements the Singleton DP.
@@ -73,7 +76,6 @@ public class Database implements IDataBase {
             }
         }
     }
-
 
 
     /**
@@ -137,21 +139,54 @@ public class Database implements IDataBase {
         return rc;
     }
 
-    public void loadDataSet() throws ScriptException, IOException, InterruptedException {
-        /*createCostumeCsv();
-        System.out.println("Loading the data set csv file...");
-        String csvFilePath1 = ".\\src\\DataBase\\countries_data.csv";
-        String csvFilePath2 = ".\\src\\DataBase\\removed.csv";
 
-        String sql1 = "INSERT INTO countries (country_name, country_id) VALUES (?, ?)";
-        String sql2 = "INSERT INTO cities (city_name, country_id) VALUES (?, ?)";
+    public void loadDataSet() throws ScriptException, IOException, InterruptedException, SQLException {
+        if(isDataSetLoaded()) { // Check if the data set should be loaded.
+            System.out.println("The Data Set was already loaded to tables countries and cities.");
+        } else {
+            System.out.println("Loading the data set csv file.");
+            createCostumeCsv();
+            String csvFilePath1 = ".\\src\\DataBase\\countries_data.csv";
+            String csvFilePath2 = ".\\src\\DataBase\\removed.csv";
 
-        insertDb(sql1, csvFilePath1,20 );
-        insertDb(sql2, csvFilePath2,20 );*/
+            String sql1 = "INSERT INTO countries (country_name, country_id) VALUES (?, ?)";
+            String sql2 = "INSERT INTO cities (city_name, country_id) VALUES (?, ?)";
+
+            insertDb(sql1, csvFilePath1, 20);
+            insertDb(sql2, csvFilePath2, 20);
+        }
     }
 
+
+    private boolean isDataSetLoaded() throws SQLException {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(DB_URL + DB_NAME, DB_USER, DB_PASSWORD);
+            stmt = connection.prepareStatement("SELECT * From countries");
+            rs =  stmt.executeQuery();
+            int count = 0;
+            while(rs.next()){
+                count++;
+            }
+            return count != 0;  // if equal to 0 then the table is null
+        } catch (SQLException ex) {
+            System.out.println(ex.getErrorCode());
+            return false;
+        } finally {
+            assert connection != null;
+            connection.close();
+            assert stmt != null;
+            stmt.close();
+            assert rs != null;
+            rs.close();
+        }
+    }
+
+
     public void createCostumeCsv() throws ScriptException, IOException{
-        try{
+        try {
             ProcessBuilder builder = new ProcessBuilder("python", System.getProperty("user.dir") + "\\src\\DataBase\\script.py" );
             Process process = builder.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -163,7 +198,7 @@ public class Database implements IDataBase {
             while ((lines=readers.readLine()) != null){
                 System.out.println("Error lines: " + lines);
             }
-        }catch (Exception e){
+        } catch (Exception e){
             e.printStackTrace();
         }
 
@@ -172,7 +207,7 @@ public class Database implements IDataBase {
     public void insertDb(String insert_query, String file_path, int batchSize) {
         Connection connection = null;
         try {
-            connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+            connection = DriverManager.getConnection(DB_URL + DB_NAME, DB_USER, DB_PASSWORD);
             connection.setAutoCommit(false);
             PreparedStatement statement = connection.prepareStatement(insert_query);
             BufferedReader lineReader = new BufferedReader(new FileReader(file_path));
