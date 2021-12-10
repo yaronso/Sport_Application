@@ -3,22 +3,25 @@ package GUI;
 import Dao.GameDao;
 import Dao.GameDaoImpl;
 import Models.Game;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
 
 public class JoinGame extends JFrame {
-
+    private static final long serialVersionUID = 1L;
     // CTR - invoke init Components method
     public JoinGame(String userName) throws IOException {
         initComponents(userName);
     }
-
 
     // Retrieve the games table to the application screen
     private void retrieve(GameDao gameDao) throws SQLException {
@@ -30,6 +33,7 @@ public class JoinGame extends JFrame {
     private void initComponents(String userName) throws IOException {
         // Initialization Objects:
         GameDao gameDao = new GameDaoImpl();
+        setResizable(false);
         jPanel1 = new JPanel();
         jPanel2 = new JPanel();
         jScrollPane1 = new JScrollPane();
@@ -77,6 +81,7 @@ public class JoinGame extends JFrame {
 
         //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jPanel1.setBackground(new java.awt.Color(45, 155, 193));
+
 
         // Set the full Games Table
         jTable1.setModel(new DefaultTableModel(
@@ -198,6 +203,7 @@ public class JoinGame extends JFrame {
             }
         });
 
+
         // Set the screen layout and its components:
         GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -270,6 +276,11 @@ public class JoinGame extends JFrame {
                                                                 .addComponent(joinGameButton, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
                                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                                 .addComponent(showMyGames, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)))))));
+        // Add the background image
+        BufferedImage myPicture = ImageIO.read(new File("src/GUI/join_game_background.PNG"));
+        JLabel picJLabel = new JLabel(new ImageIcon(myPicture));
+        picJLabel.setBounds(0, 0,1350, 750);
+        jPanel2.add(picJLabel);
 
         // Vertical Group
         jPanel2Layout.setVerticalGroup(

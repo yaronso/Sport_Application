@@ -2,8 +2,13 @@ package GUI;
 
 import Dao.GameDao;
 import Dao.GameDaoImpl;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -17,6 +22,7 @@ public class FindGame extends JFrame {
     public void Init() throws IOException {
         // Initialization Objects:
         GameDao gameDao = new GameDaoImpl();
+        setResizable(false);
         jPanel1 = new JPanel();
         jPanel2 = new JPanel();
         jScrollPane1 = new JScrollPane();
@@ -39,11 +45,29 @@ public class FindGame extends JFrame {
         jLabelMostPlayedSportInCountrySuff = new JLabel();
 
         jLabelGameName.setText("Find Game according game name:");
+        jLabelGameName.setForeground(Color.black);
+        jLabelGameName.setBackground(Color.white);
+        jLabelGameName.setOpaque(true);
         jLabelFindGamesInCity.setText("Find All Games in city:");
+        jLabelFindGamesInCity.setForeground(Color.black);
+        jLabelFindGamesInCity.setBackground(Color.white);
+        jLabelFindGamesInCity.setOpaque(true);
         jLabelFindGamesCountry.setText("Find All Games in country:");
+        jLabelFindGamesCountry.setForeground(Color.black);
+        jLabelFindGamesCountry.setBackground(Color.white);
+        jLabelFindGamesCountry.setOpaque(true);
         jLabelFindGamesMaxLevel.setText("Find All Games with max level Under Sport Category:");
+        jLabelFindGamesMaxLevel.setForeground(Color.black);
+        jLabelFindGamesMaxLevel.setBackground(Color.white);
+        jLabelFindGamesMaxLevel.setOpaque(true);
         jLabelMostPlayedSportInCountryPref.setText("The country where");
+        jLabelMostPlayedSportInCountryPref.setForeground(Color.black);
+        jLabelMostPlayedSportInCountryPref.setBackground(Color.white);
+        jLabelMostPlayedSportInCountryPref.setOpaque(true);
         jLabelMostPlayedSportInCountrySuff.setText("is most played is");
+        jLabelMostPlayedSportInCountrySuff.setForeground(Color.black);
+        jLabelMostPlayedSportInCountrySuff.setBackground(Color.white);
+        jLabelMostPlayedSportInCountrySuff.setOpaque(true);
 
         // JButtons:
         clearBtn = new JButton();
@@ -238,6 +262,13 @@ public class FindGame extends JFrame {
                                                                                 .addGroup(jPanel2Layout.createSequentialGroup()
                                                                                         .addComponent(clearBtn, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
                                                                                         .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))));
+
+        // Add the background image
+        //BufferedImage myPicture = ImageIO.read(new File("src/GUI/join_game_background.PNG"));
+        BufferedImage myPicture = ImageIO.read(new File("src/GUI/find_game_background.PNG"));
+        JLabel picJLabel = new JLabel(new ImageIcon(myPicture));
+        picJLabel.setBounds(0, 0,1100, 750);
+        jPanel2.add(picJLabel);
 
         // Vertical Group
         jPanel2Layout.setVerticalGroup(

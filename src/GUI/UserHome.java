@@ -21,7 +21,6 @@ public class UserHome extends JFrame {
      * Create the UserHome frame.
      */
     public UserHome(String userName) throws IOException {
-        // TODO - ADD a button that move the user inside the application
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 1014, 597);
         setResizable(false);
