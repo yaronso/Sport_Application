@@ -54,7 +54,7 @@ public class FindGame extends JFrame {
         countryMostPlayedBtn = new JButton();
 
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jPanel1.setBackground(new java.awt.Color(45, 155, 193));
         // Set the full Games Table
         jTable1.setModel(new DefaultTableModel(

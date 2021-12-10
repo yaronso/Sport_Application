@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.LinkedBlockingDeque;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -38,7 +39,7 @@ public class UserRegistration extends JFrame {
         UserDao userDao = new UserDaoImpl();
         List userList = new List();
         setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\User\\Desktop\\STDM.jpg"));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 1014, 597);
         setResizable(false);
         contentPane = new JPanel();
@@ -48,27 +49,35 @@ public class UserRegistration extends JFrame {
 
         JLabel lblNewUserRegister = new JLabel("New User Register");
         lblNewUserRegister.setFont(new Font("Times New Roman", Font.BOLD, 35));
-        lblNewUserRegister.setForeground(Color.white);
-        lblNewUserRegister.setBounds(362, 52, 325, 50);
+        lblNewUserRegister.setForeground(Color.black);
+        lblNewUserRegister.setBackground(Color.white);
+        lblNewUserRegister.setOpaque(true);
+        lblNewUserRegister.setBounds(355, 52, 286, 50);
         contentPane.add(lblNewUserRegister);
 
 
         JLabel lblName = new JLabel("First name");
         lblName.setFont(new Font("Tahoma", Font.BOLD, 18));
-        lblName.setForeground(Color.white);
+        lblName.setForeground(Color.black);
+        lblName.setBackground(Color.white);
+        lblName.setOpaque(true);
         lblName.setBounds(58, 152, 99, 43);
         contentPane.add(lblName);
 
         JLabel lblNewLabel = new JLabel("Last name");
         lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
-        lblNewLabel.setBounds(58, 243, 110, 29);
-        lblNewLabel.setForeground(Color.white);
+        lblNewLabel.setBounds(58, 243, 100, 29);
+        lblNewLabel.setForeground(Color.black);
+        lblNewLabel.setBackground(Color.white);
+        lblNewLabel.setOpaque(true);
         contentPane.add(lblNewLabel);
 
-        JLabel lblEmailAddress = new JLabel("Email\r\n address");
+        JLabel lblEmailAddress = new JLabel("Email address");
         lblEmailAddress.setFont(new Font("Tahoma", Font.BOLD, 18));
-        lblEmailAddress.setBounds(58, 324, 124, 36);
-        lblEmailAddress.setForeground(Color.white);
+        lblEmailAddress.setBounds(58, 324, 130, 36);
+        lblEmailAddress.setForeground(Color.black);
+        lblEmailAddress.setBackground(Color.white);
+        lblEmailAddress.setOpaque(true);
         contentPane.add(lblEmailAddress);
 
 
@@ -100,19 +109,25 @@ public class UserRegistration extends JFrame {
         JLabel lblUsername = new JLabel("Username");
         lblUsername.setFont(new Font("Tahoma", Font.BOLD, 18));
         lblUsername.setBounds(542, 159, 99, 29);
-        lblUsername.setForeground(Color.white);
+        lblUsername.setForeground(Color.black);
+        lblUsername.setBackground(Color.white);
+        lblUsername.setOpaque(true);
         contentPane.add(lblUsername);
 
         JLabel lblPassword = new JLabel("Password");
         lblPassword.setFont(new Font("Tahoma", Font.BOLD, 18));
         lblPassword.setBounds(542, 245, 99, 24);
-        lblPassword.setForeground(Color.white);
+        lblPassword.setForeground(Color.black);
+        lblPassword.setBackground(Color.white);
+        lblPassword.setOpaque(true);
         contentPane.add(lblPassword);
 
         JLabel lblMobileNumber = new JLabel("Mobile number");
         lblMobileNumber.setFont(new Font("Tahoma", Font.BOLD, 17));
-        lblMobileNumber.setBounds(542, 329, 139, 26);
-        lblMobileNumber.setForeground(Color.white);
+        lblMobileNumber.setBounds(542, 329, 130, 26);
+        lblMobileNumber.setForeground(Color.black);
+        lblMobileNumber.setBackground(Color.WHITE);
+        lblMobileNumber.setOpaque(true);
         contentPane.add(lblMobileNumber);
 
         mob = new JTextField();
@@ -162,7 +177,7 @@ public class UserRegistration extends JFrame {
         // Add the background image
         BufferedImage myPicture = ImageIO.read(new File("src/GUI/register_background.PNG"));
         JLabel picJLabel = new JLabel(new ImageIcon(myPicture));
-        picJLabel.setBounds(0, 0,1020, 597);
+        picJLabel.setBounds(0, 0,1000, 597);
         contentPane.add(picJLabel);
     }
 

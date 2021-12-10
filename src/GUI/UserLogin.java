@@ -35,9 +35,9 @@ public class UserLogin extends JFrame {
         setContentPane(contentPane);
         contentPane.setLayout(null);
 
-        JLabel lblNewLabel = new JLabel("Login");
+        JLabel lblNewLabel = new JLabel("Login/Register");
         lblNewLabel.setForeground(Color.BLACK);
-        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 46));
+        lblNewLabel.setFont(new Font("Times New Roman", Font.BOLD, 30));
         lblNewLabel.setBounds(420, 13, 273, 93);
         contentPane.add(lblNewLabel);
 
@@ -93,7 +93,12 @@ public class UserLogin extends JFrame {
                 String password = passwordField.getText();
                 if (userName.equals("Admin") && password.equals("Admin")) { // Cheat for grader.
                     dispose();
-                    UserHome userHome = new UserHome(userName);
+                    UserHome userHome = null;
+                    try {
+                        userHome = new UserHome(userName);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
                     userHome.setTitle("Welcome " + userName);
                     userHome.setVisible(true);
                     return;
@@ -107,7 +112,7 @@ public class UserLogin extends JFrame {
                     } else {
                         JOptionPane.showMessageDialog(btnNewButton, "Wrong Username & Password");
                     }
-                } catch (SQLException exception) {
+                } catch (SQLException | IOException exception) {
                     exception.printStackTrace();
                 }
             }

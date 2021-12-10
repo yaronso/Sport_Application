@@ -5,11 +5,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.UIManager;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 public class UserHome extends JFrame {
@@ -20,7 +20,7 @@ public class UserHome extends JFrame {
     /**
      * Create the UserHome frame.
      */
-    public UserHome(String userName) {
+    public UserHome(String userName) throws IOException {
         // TODO - ADD a button that move the user inside the application
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 1014, 597);
@@ -43,6 +43,8 @@ public class UserHome extends JFrame {
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
+                assert findGame != null;
+                findGame.setTitle("Find Game Page");
                 findGame.setVisible(true);
             }
         });
@@ -63,6 +65,8 @@ public class UserHome extends JFrame {
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
+                assert joinGame != null;
+                joinGame.setTitle("Game Management Page");
                 joinGame.setVisible(true);
             }
         });
@@ -74,19 +78,25 @@ public class UserHome extends JFrame {
         button.setBackground(UIManager.getColor("Button.disabledForeground"));
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                ChangePassword bo = null;
+                ChangePassword changePassword = null;
                 try {
-                    bo = new ChangePassword(userName);
+                    changePassword = new ChangePassword(userName);
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
-                bo.setTitle("Change Password");
-                bo.setVisible(true);
+                assert changePassword != null;
+                changePassword.setTitle("Change Password");
+                changePassword.setVisible(true);
 
             }
         });
         button.setFont(new Font("Tahoma", Font.PLAIN, 35));
         button.setBounds(247, 370, 491, 90);
         contentPane.add(button);
+
+        BufferedImage myPicture = ImageIO.read(new File("src/GUI/jordan.PNG"));
+        JLabel picJLabel = new JLabel(new ImageIcon(myPicture));
+        picJLabel.setBounds(0, 0,1000, 597);
+        contentPane.add(picJLabel);
     }
 }

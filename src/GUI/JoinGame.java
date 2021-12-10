@@ -75,7 +75,7 @@ public class JoinGame extends JFrame {
         dateButton = new JButton();
         jLabelTitle = new JLabel();
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jPanel1.setBackground(new java.awt.Color(45, 155, 193));
 
         // Set the full Games Table

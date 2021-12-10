@@ -1,9 +1,7 @@
 package ClientServer;
 
-import GUI.ChangePassword;
-import GUI.FindGame;
-import GUI.JoinGame;
-import GUI.UserLogin;
+import GUI.*;
+
 import java.awt.*;
 import java.io.FileReader;
 import java.net.Socket;
@@ -23,17 +21,19 @@ public class WorkerRunnable implements Runnable {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try { // Start the full game flow.
-                    UserLogin loginFrame = new UserLogin();
-                    loginFrame.setVisible(true);
+                    WelcomePage welcomePage = new WelcomePage();
+                    welcomePage.setTitle("Welcome Page For Match4Sport");
+                    welcomePage.setVisible(true);
+                    //loginFrame.setVisible(true);
+                    //UserRegistration userRegistration = new UserRegistration();
+                    //userRegistration.setVisible(true);
                     //JoinGame joinGame = new JoinGame("yasofer");
                     //joinGame.setVisible(true);
                     //FindGame findGame = new FindGame();
                     //findGame.setVisible(true);
                     //ChangePassword changePassword = new ChangePassword("yasofer");
                     //changePassword.setVisible(true);
-                    //UserLogin loginFrame = new UserLogin();
-                    //loginFrame.setVisible(true);
-                    //UserHome userHome = new UserHome("yasofer", connection);
+                    //UserHome userHome = new UserHome("yasofer");
                     //userHome.setVisible(true);
                 } catch (IOException e) {
                     e.printStackTrace();
