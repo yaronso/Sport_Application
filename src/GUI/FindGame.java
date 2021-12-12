@@ -5,6 +5,7 @@ import Dao.GameDaoImpl;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -22,11 +23,15 @@ public class FindGame extends JFrame {
     public void Init() throws IOException {
         // Initialization Objects:
         GameDao gameDao = new GameDaoImpl();
-        setResizable(false);
+        //setResizable(false);
         jPanel1 = new JPanel();
         jPanel2 = new JPanel();
         jScrollPane1 = new JScrollPane();
+        jScrollPane1.setBorder(BorderFactory.createTitledBorder ("General Information"));
+        jScrollPaneStatistics = new JScrollPane();
+        jScrollPaneStatistics.setBorder(BorderFactory.createTitledBorder ("Statistics"));
         jTable1 = new JTable();
+        statisticsTable = new JTable();
 
         // TextFields:
         gameNameTxt = new JTextField();
@@ -89,6 +94,14 @@ public class FindGame extends JFrame {
             }
         });
 
+        statisticsTable.setModel(new DefaultTableModel(
+                new Object [][] {}, new String [] {} ));
+        statisticsTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                //jTable1MouseClicked(evt);
+            }
+        });
+
 
         findAccGameNameBtn.setText("Find game");
         findAccGameNameBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -105,7 +118,8 @@ public class FindGame extends JFrame {
                     throwables.printStackTrace();
                 }
                 jTable1.setModel(dm);
-                setViewTable();
+                setViewTable(jScrollPane1, jTable1);
+                //setViewTable();
             }
         });
 
@@ -124,7 +138,8 @@ public class FindGame extends JFrame {
                     throwables.printStackTrace();
                 }
                 jTable1.setModel(dm);
-                setViewTable();
+                setViewTable(jScrollPane1, jTable1);
+                //setViewTable();
             }
         });
 
@@ -144,7 +159,8 @@ public class FindGame extends JFrame {
                 }
                 assert dm != null;
                 jTable1.setModel(dm);
-                setViewTable();
+                setViewTable(jScrollPane1, jTable1);
+                //setViewTable();
             }
         });
 
@@ -163,7 +179,8 @@ public class FindGame extends JFrame {
                     exception.printStackTrace();
                 }
                 jTable1.setModel(dm);
-                setViewTable();
+                setViewTable(jScrollPane1, jTable1);
+                //setViewTable();
             }
         });
 
@@ -181,8 +198,8 @@ public class FindGame extends JFrame {
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }
-                jTable1.setModel(dm);
-                setViewTable();
+                statisticsTable.setModel(dm);
+                setViewTable(jScrollPaneStatistics, statisticsTable);
             }
         });
 
@@ -190,7 +207,8 @@ public class FindGame extends JFrame {
         clearBtn.setText("Clear");
         clearBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                setViewTable();
+                //setViewTable();
+                setViewTable(jScrollPane1, jTable1);
                 clearBtnActionPerformed(evt);
             }
         });
@@ -205,6 +223,7 @@ public class FindGame extends JFrame {
                         .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE) // for the 1st table
+                                .addComponent(jScrollPaneStatistics, GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE) // for the 2nd table
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel2Layout.createSequentialGroup()
@@ -231,44 +250,44 @@ public class FindGame extends JFrame {
                                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                                 .addGap(21, 21, 21))
 
-                                                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                        .addComponent(jLabelFindGamesCountry)
-                                                                        .addGap(18, 18, 18)
-                                                                        .addComponent(countryTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
-                                                                        .addGap(18, 18, 18)
-                                                                        .addComponent(findCountryBtn, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(jLabelFindGamesCountry)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(countryTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(findCountryBtn, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
 
-                                                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                        .addComponent(jLabelFindGamesMaxLevel)
-                                                                        .addGap(18, 18, 18)
-                                                                        .addComponent(findMaxLevelTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
-                                                                        .addGap(18, 18, 18)
-                                                                        .addComponent(findMaxLevelBtn))
-
-
-                                                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                        .addComponent(jLabelMostPlayedSportInCountryPref)
-                                                                        .addGap(18, 18, 18)
-                                                                        .addComponent(countryMostPlayedText, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
-                                                                        .addGap(18, 18, 18)
-                                                                        .addComponent(jLabelMostPlayedSportInCountrySuff)
-                                                                        .addGap(18, 18, 18)
-                                                                        .addComponent(countryMostPlayedBtn))
-                                                                .addGap(0, 9, Short.MAX_VALUE)))
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(jLabelFindGamesMaxLevel)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(findMaxLevelTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(findMaxLevelBtn))
 
 
-                                                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                        .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                                        .addComponent(clearBtn, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
-                                                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))));
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(jLabelMostPlayedSportInCountryPref)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(countryMostPlayedText, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(jLabelMostPlayedSportInCountrySuff)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(countryMostPlayedBtn))
+                                                        .addGap(0, 9, Short.MAX_VALUE)))
+
+
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(clearBtn, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))));
 
         // Add the background image
-        //BufferedImage myPicture = ImageIO.read(new File("src/GUI/join_game_background.PNG"));
-        BufferedImage myPicture = ImageIO.read(new File("src/GUI/find_game_background.PNG"));
+        BufferedImage myPicture = ImageIO.read(new File("src/GUI/continents-28616.png"));
         JLabel picJLabel = new JLabel(new ImageIcon(myPicture));
-        picJLabel.setBounds(0, 0,1100, 750);
-        jPanel2.add(picJLabel);
+        picJLabel.setBounds(0, 0,1900, 1000);
+        jPanel2.add(picJLabel, BorderLayout.CENTER);
+
 
         // Vertical Group
         jPanel2Layout.setVerticalGroup(
@@ -292,35 +311,36 @@ public class FindGame extends JFrame {
                                                                         .addComponent(findCityBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                                                 .addGap(52, 52, 52))
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                                        .addComponent(jLabelFindGamesCountry)
-                                                                        .addComponent(countryTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(findCountryBtn)))
-                                                                .addGap(52, 52, 52)
+                                                        .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                                .addComponent(jLabelFindGamesCountry)
+                                                                .addComponent(countryTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                                .addComponent(findCountryBtn)))
+                                                .addGap(52, 52, 52)
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                                        .addComponent(jLabelFindGamesMaxLevel)
-                                                                        .addComponent(findMaxLevelTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(findMaxLevelBtn))
-                                                                .addGap(52, 52, 52)
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jLabelFindGamesMaxLevel)
+                                                        .addComponent(findMaxLevelTxt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(findMaxLevelBtn))
+                                                .addGap(52, 52, 52)
 
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                                        .addComponent(jLabelMostPlayedSportInCountryPref)
-                                                                        .addComponent(countryMostPlayedText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(jLabelMostPlayedSportInCountrySuff)
-                                                                        .addComponent(countryMostPlayedBtn))
-                                                                .addGap(52, 52, 52)
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jLabelMostPlayedSportInCountryPref)
+                                                        .addComponent(countryMostPlayedText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(jLabelMostPlayedSportInCountrySuff)
+                                                        .addComponent(countryMostPlayedBtn))
+                                                .addGap(52, 52, 52)
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                                        .addComponent(clearBtn))
-                                                                .addGap(51, 51, 51))
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(clearBtn))
+                                                .addGap(51, 51, 51))
 
-                                                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                        .addGap(38, 38, 38)
-                                                                        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 306, GroupLayout.PREFERRED_SIZE)
-                                                                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)))
-                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)));
+                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                .addGap(38, 38, 38)
+                                                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 306, GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                                                .addComponent(jScrollPaneStatistics, GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)))
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)));
 
         jLabelTitle.setText("Find Games");
         GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
@@ -363,11 +383,17 @@ public class FindGame extends JFrame {
     // performed when clicking the clean button
     private void clearBtnActionPerformed(java.awt.event.ActionEvent evt) {
         jTable1.setModel(new DefaultTableModel());
+        statisticsTable.setModel(new DefaultTableModel());
     }
 
     // Set the correct table in the application view
     public void setViewTable(){
         jScrollPane1.setViewportView(jTable1);
+    }
+
+    // Set the correct table in the application view
+    public void setViewTable(JScrollPane jScrollPane,JTable table) {
+        jScrollPane.setViewportView(table);
     }
 
     // labels declarations:
@@ -398,5 +424,8 @@ public class FindGame extends JFrame {
     JPanel jPanel1;
     JPanel jPanel2;
     JScrollPane jScrollPane1;
+    JScrollPane jScrollPaneStatistics;
     JTable jTable1;
+    JTable statisticsTable;
+
 }

@@ -7,6 +7,7 @@ import Models.Game;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -33,11 +34,13 @@ public class JoinGame extends JFrame {
     private void initComponents(String userName) throws IOException {
         // Initialization Objects:
         GameDao gameDao = new GameDaoImpl();
-        setResizable(false);
+        //setResizable(false);
         jPanel1 = new JPanel();
         jPanel2 = new JPanel();
         jScrollPane1 = new JScrollPane();
+        jScrollPane1.setBorder(BorderFactory.createTitledBorder ("Worldwide Games"));
         jScrollPaneMatchGames = new JScrollPane();
+        jScrollPaneMatchGames.setBorder(BorderFactory.createTitledBorder ("Your Matches"));
         jTable1 = new JTable();
         matchGamesTable = new JTable();
 
@@ -53,12 +56,33 @@ public class JoinGame extends JFrame {
 
         // JLabels:
         jLabelGameName = new JLabel();
+        jLabelGameName.setForeground(Color.black);
+        jLabelGameName.setBackground(Color.white);
+        jLabelGameName.setOpaque(true);
         jLabelSportCategory = new JLabel();
+        jLabelSportCategory.setForeground(Color.black);
+        jLabelSportCategory.setBackground(Color.white);
+        jLabelSportCategory.setOpaque(true);
         jLabelCountry = new JLabel();
+        jLabelCountry.setForeground(Color.black);
+        jLabelCountry.setBackground(Color.white);
+        jLabelCountry.setOpaque(true);
         jLabelCity = new JLabel();
+        jLabelCity.setForeground(Color.black);
+        jLabelCity.setBackground(Color.white);
+        jLabelCity.setOpaque(true);
         jLabelDate = new JLabel();
+        jLabelDate.setForeground(Color.black);
+        jLabelDate.setBackground(Color.white);
+        jLabelDate.setOpaque(true);
         jLabelPlayers = new JLabel();
+        jLabelPlayers.setForeground(Color.black);
+        jLabelPlayers.setBackground(Color.white);
+        jLabelPlayers.setOpaque(true);
         jLabelGameLevel = new JLabel();
+        jLabelGameLevel.setForeground(Color.black);
+        jLabelGameLevel.setBackground(Color.white);
+        jLabelGameLevel.setOpaque(true);
         jLabelGameName.setText("Game Name");
         jLabelSportCategory.setText("Sport Category");
         jLabelCountry.setText("Country");
@@ -277,9 +301,9 @@ public class JoinGame extends JFrame {
                                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                                 .addComponent(showMyGames, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)))))));
         // Add the background image
-        BufferedImage myPicture = ImageIO.read(new File("src/GUI/join_game_background.PNG"));
+        BufferedImage myPicture = ImageIO.read(new File("src/GUI/globe-3411506_1920.jpg"));
         JLabel picJLabel = new JLabel(new ImageIcon(myPicture));
-        picJLabel.setBounds(0, 0,1350, 750);
+        picJLabel.setBounds(0, 0,1900, 1000);
         jPanel2.add(picJLabel);
 
         // Vertical Group
