@@ -89,6 +89,7 @@ public class GameDaoImpl implements GameDao {
             "         ORDER BY max(t1.level) DESC \n" +
             "         LIMIT 10;";
 
+    // find the country where sport ? is most played.
     private static final String MOST_PLAYED_SPORT_COUNTRY = "SELECT t3.country_name\n" +
                                                     "         FROM game_details as t1\n" +
                                                         "         JOIN cities as t2\n" +
@@ -99,6 +100,13 @@ public class GameDaoImpl implements GameDao {
                                                                     "GROUP BY t3.country_name\n" +
                                                                     "ORDER BY COUNT(*) DESC\n" +
                                                                                     "LIMIT 1";
+
+    // Find the most played sport in the current month (statistics).
+    private static final String  MOST_PLAYED_SPORT_OF_MONTH = "SELECT distinct t1.sport_category " +
+                                                                "FROM game_details as t1 " +
+                                                                "WHERE month(t1.game_date) = (SELECT MONTH(CURDATE())) " +
+                                                                "GROUP BY t1.sport_category " +
+                                                                 "ORDER BY COUNT(*) DESC LIMIT 1";
 
     // Update Statements:
     private static final String UPDATE_GAME_LEVEL = "UPDATE game_details SET players = ? WHERE game_name = ?";
@@ -464,6 +472,30 @@ public class GameDaoImpl implements GameDao {
             conn = getConnection();
             stmt = conn.prepareStatement(MOST_PLAYED_SPORT_COUNTRY);
             stmt.setString(1, sportCategory);
+            System.out.println(stmt);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String country = rs.getString(1);
+                dm.addRow(new String[]{country});
+            }
+            return dm;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            close(stmt);
+            close(conn);
+        }
+    }
+
+    @Override
+    public DefaultTableModel findMostPlayedSportOfMonth() {
+        DefaultTableModel dm = new DefaultTableModel();
+        dm.addColumn("country");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(MOST_PLAYED_SPORT_OF_MONTH);
             System.out.println(stmt);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {

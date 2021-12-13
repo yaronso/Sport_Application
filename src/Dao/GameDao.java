@@ -25,4 +25,5 @@ public interface GameDao {
     boolean getCurrNumPlayersAndUpdatePlayers(Connection conn, PreparedStatement stmt, String gameName) throws SQLException;
     boolean insertToMatchGameTable(Connection connection, PreparedStatement stmt, String userName, String gameName, String creationDate, String participant);
     boolean isCountryOrCityValid(String input, String flag) throws SQLException;
+    DefaultTableModel findMostPlayedSportOfMonth();
 }

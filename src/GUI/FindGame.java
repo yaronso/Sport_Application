@@ -29,7 +29,7 @@ public class FindGame extends JFrame {
         jScrollPane1 = new JScrollPane();
         jScrollPane1.setBorder(BorderFactory.createTitledBorder ("General Information"));
         jScrollPaneStatistics = new JScrollPane();
-        jScrollPaneStatistics.setBorder(BorderFactory.createTitledBorder ("Statistics"));
+        jScrollPaneStatistics.setBorder(BorderFactory.createTitledBorder ("General Statistics"));
         jTable1 = new JTable();
         statisticsTable = new JTable();
 
@@ -48,6 +48,7 @@ public class FindGame extends JFrame {
         jLabelFindGamesMaxLevel = new JLabel();
         jLabelMostPlayedSportInCountryPref = new JLabel();
         jLabelMostPlayedSportInCountrySuff = new JLabel();
+        jLabelMostPlayedThisMonth = new JLabel();
 
         jLabelGameName.setText("Find Game according game name:");
         jLabelGameName.setForeground(Color.black);
@@ -73,6 +74,10 @@ public class FindGame extends JFrame {
         jLabelMostPlayedSportInCountrySuff.setForeground(Color.black);
         jLabelMostPlayedSportInCountrySuff.setBackground(Color.white);
         jLabelMostPlayedSportInCountrySuff.setOpaque(true);
+        jLabelMostPlayedThisMonth.setText("Most Played Sport Of the Month");
+        jLabelMostPlayedThisMonth.setForeground(Color.black);
+        jLabelMostPlayedThisMonth.setBackground(Color.white);
+        jLabelMostPlayedThisMonth.setOpaque(true);
 
         // JButtons:
         clearBtn = new JButton();
@@ -81,6 +86,7 @@ public class FindGame extends JFrame {
         findCountryBtn = new JButton();
         findMaxLevelBtn = new JButton();
         countryMostPlayedBtn = new JButton();
+        mostPlayedSportOfMonthBtn = new JButton();
 
 
         //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -203,6 +209,15 @@ public class FindGame extends JFrame {
             }
         });
 
+        mostPlayedSportOfMonthBtn.setText("Click");
+        mostPlayedSportOfMonthBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DefaultTableModel dm = null;
+                dm = gameDao.findMostPlayedSportOfMonth();
+                statisticsTable.setModel(dm);
+                setViewTable(jScrollPaneStatistics, statisticsTable);
+            }
+        });
 
         clearBtn.setText("Clear");
         clearBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -272,15 +287,23 @@ public class FindGame extends JFrame {
                                                                 .addGap(18, 18, 18)
                                                                 .addComponent(jLabelMostPlayedSportInCountrySuff)
                                                                 .addGap(18, 18, 18)
-                                                                .addComponent(countryMostPlayedBtn))
-                                                        .addGap(0, 9, Short.MAX_VALUE)))
+                                                                .addComponent(countryMostPlayedBtn)
+                                                                .addGap(18, 18, 18)
+                                                                .addGap(0, 9, Short.MAX_VALUE))
+
+
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(jLabelMostPlayedThisMonth)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(mostPlayedSportOfMonthBtn)
+                                                                .addGap(18, 18, 18))
 
 
                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                 .addComponent(clearBtn, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))));
+                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))))));
 
         // Add the background image
         BufferedImage myPicture = ImageIO.read(new File("src/GUI/continents-28616.png"));
@@ -330,6 +353,12 @@ public class FindGame extends JFrame {
                                                         .addComponent(jLabelMostPlayedSportInCountrySuff)
                                                         .addComponent(countryMostPlayedBtn))
                                                 .addGap(52, 52, 52)
+
+
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jLabelMostPlayedThisMonth)
+                                                    .addComponent(mostPlayedSportOfMonthBtn)
+                                                .addGap(51, 51, 51))
 
                                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                         .addComponent(clearBtn))
@@ -404,6 +433,7 @@ public class FindGame extends JFrame {
     JLabel jLabelFindGamesMaxLevel;
     JLabel jLabelMostPlayedSportInCountryPref;
     JLabel jLabelMostPlayedSportInCountrySuff;
+    JLabel jLabelMostPlayedThisMonth;
 
     // Text Fields declarations:
     JTextField gameNameTxt;
@@ -419,6 +449,7 @@ public class FindGame extends JFrame {
     JButton findCountryBtn;
     JButton findMaxLevelBtn;
     JButton countryMostPlayedBtn;
+    JButton mostPlayedSportOfMonthBtn;
 
     // etc
     JPanel jPanel1;
