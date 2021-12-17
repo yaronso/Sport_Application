@@ -39,6 +39,7 @@ public class FindGame extends JFrame {
         countryTxt = new JTextField();
         findMaxLevelTxt = new JTextField();
         countryMostPlayedText = new JTextField();
+        minAvgPlayersInCountryText = new JTextField();
 
         // JLabels:
         jLabelTitle = new JLabel();
@@ -49,6 +50,7 @@ public class FindGame extends JFrame {
         jLabelMostPlayedSportInCountryPref = new JLabel();
         jLabelMostPlayedSportInCountrySuff = new JLabel();
         jLabelMostPlayedThisMonth = new JLabel();
+        jLabelMinAvgPlayersLeftInCountry = new JLabel();
 
         jLabelGameName.setText("Find Game according game name:");
         jLabelGameName.setForeground(Color.black);
@@ -78,6 +80,12 @@ public class FindGame extends JFrame {
         jLabelMostPlayedThisMonth.setForeground(Color.black);
         jLabelMostPlayedThisMonth.setBackground(Color.white);
         jLabelMostPlayedThisMonth.setOpaque(true);
+        jLabelMinAvgPlayersLeftInCountry.setText("Sport with minimum average players needed in: ");
+        jLabelMinAvgPlayersLeftInCountry.setForeground(Color.black);
+        jLabelMinAvgPlayersLeftInCountry.setBackground(Color.white);
+        jLabelMinAvgPlayersLeftInCountry.setOpaque(true);
+
+
 
         // JButtons:
         clearBtn = new JButton();
@@ -87,6 +95,7 @@ public class FindGame extends JFrame {
         findMaxLevelBtn = new JButton();
         countryMostPlayedBtn = new JButton();
         mostPlayedSportOfMonthBtn = new JButton();
+        minAvgPlayersBtn = new JButton();
 
 
         //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -219,6 +228,25 @@ public class FindGame extends JFrame {
             }
         });
 
+        minAvgPlayersBtn.setText("Click");
+        minAvgPlayersBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DefaultTableModel dm = null;
+                String mostPlayedCountry = minAvgPlayersInCountryText.getText();
+                try {
+                    if(Utils.PropertiesReaders.isAnyObjectNull(mostPlayedCountry)) {
+                        JOptionPane.showMessageDialog(minAvgPlayersBtn, "Minimum Average Players Needed In Country Error: You must write the Country.");
+                        return;
+                    }
+                    dm = gameDao.findMinAvgPlayersLeftInCountry(mostPlayedCountry);
+                } catch (SQLException exception) {
+                    exception.printStackTrace();
+                }
+                statisticsTable.setModel(dm);
+                setViewTable(jScrollPaneStatistics, statisticsTable);
+            }
+        });
+
         clearBtn.setText("Clear");
         clearBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -298,6 +326,14 @@ public class FindGame extends JFrame {
                                                                 .addComponent(mostPlayedSportOfMonthBtn)
                                                                 .addGap(18, 18, 18))
 
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(jLabelMinAvgPlayersLeftInCountry)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(minAvgPlayersInCountryText, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(minAvgPlayersBtn)
+                                                                .addGap(18, 18, 18))
+
 
                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -359,6 +395,12 @@ public class FindGame extends JFrame {
                                                         .addComponent(jLabelMostPlayedThisMonth)
                                                     .addComponent(mostPlayedSportOfMonthBtn)
                                                 .addGap(51, 51, 51))
+
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jLabelMinAvgPlayersLeftInCountry)
+                                                        .addComponent(minAvgPlayersInCountryText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(minAvgPlayersBtn)
+                                                        .addGap(51, 51, 51))
 
                                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                         .addComponent(clearBtn))
@@ -434,6 +476,7 @@ public class FindGame extends JFrame {
     JLabel jLabelMostPlayedSportInCountryPref;
     JLabel jLabelMostPlayedSportInCountrySuff;
     JLabel jLabelMostPlayedThisMonth;
+    JLabel jLabelMinAvgPlayersLeftInCountry;
 
     // Text Fields declarations:
     JTextField gameNameTxt;
@@ -441,6 +484,7 @@ public class FindGame extends JFrame {
     JTextField countryTxt;
     JTextField findMaxLevelTxt;
     JTextField countryMostPlayedText;
+    JTextField minAvgPlayersInCountryText;
 
     // Buttons declarations:
     JButton clearBtn;
@@ -450,6 +494,7 @@ public class FindGame extends JFrame {
     JButton findMaxLevelBtn;
     JButton countryMostPlayedBtn;
     JButton mostPlayedSportOfMonthBtn;
+    JButton minAvgPlayersBtn;
 
     // etc
     JPanel jPanel1;

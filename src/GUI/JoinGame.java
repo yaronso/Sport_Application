@@ -463,10 +463,14 @@ public class JoinGame extends JFrame {
         String userName = jTable1.getValueAt(currRow, 0).toString();
         String creationDate = jTable1.getValueAt(currRow, 8).toString();
         // TODO - check the user does not have this match game in its table!
-        if(gameDao.insertToMatchGameTableAndDownPlayers(userName, gameNameTxt.getText(), creationDate, participant, Integer.parseInt(playersTxt.getText()))) { // Transactional Function.
-            JOptionPane.showMessageDialog(null, "Successfully joined.");
+        if(!gameDao.checkIfMatchExists(userName, gameNameTxt.getText(), creationDate, participant)) {
+            JOptionPane.showMessageDialog(null, "You're already signed up to this game.");
         } else {
-            JOptionPane.showMessageDialog(null, "Problem was occurred while join game.");
+            if(gameDao.insertToMatchGameTableAndDownPlayers(userName, gameNameTxt.getText(), creationDate, participant, Integer.parseInt(playersTxt.getText()))) { // Transactional Function.
+                JOptionPane.showMessageDialog(null, "Successfully joined.");
+            } else {
+                JOptionPane.showMessageDialog(null, "Problem was occurred while join game.");
+            }
         }
         retrieve(gameDao);
         retrieveMatches(gameDao, participant);

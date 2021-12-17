@@ -19,6 +19,7 @@ public class GameDaoImpl implements GameDao {
     // Insert statements:
     private static final String INSERT_GAME_DETAILS = "INSERT IGNORE INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String INSERT_MATCH_GAMES = "INSERT IGNORE INTO match_games(user_name, game_name, creation_date, participant) VALUES(?, ?, ?, ?)";
+    private static final String DOES_MATCH_EXIST = "SELECT * FROM match_games WHERE user_name = ? and game_name = ? and creation_date = ? and participant = ?";
     private static final String INSERT_SELECT_ZERO_GAME = "INSERT IGNORE INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) " +
                                                             "SELECT user_name, game_name, game_date, creation_date, city, sport_category, players + 1, level " +
                                                                 " FROM game_details_archives WHERE game_name=?";
@@ -107,6 +108,16 @@ public class GameDaoImpl implements GameDao {
                                                                 "WHERE month(t1.game_date) = (SELECT MONTH(CURDATE())) " +
                                                                 "GROUP BY t1.sport_category " +
                                                                  "ORDER BY COUNT(*) DESC LIMIT 1";
+
+    private static final String MIN_AVG_PLAYERS_LEFT_COUNTRY = "SELECT distinct t1.sport_category, avg(t1.players) as avg_players\n" +
+                                                                 "    FROM game_details as t1 JOIN cities as t2\n" +
+                                                                 "    ON t1.city = t2.city_name\n" +
+                                                                 "    JOIN countries as t3\n" +
+                                                                 "    ON t2.country_id = t3.country_id\n" +
+                                                                 "      where t3.country_name = ?\n" +
+                                                                 "      group by t1.sport_category\n" +
+                                                                 "      order by avg_players asc\n" +
+                                                                 "      limit 1";
 
     // Update Statements:
     private static final String UPDATE_GAME_LEVEL = "UPDATE game_details SET players = ? WHERE game_name = ?";
@@ -488,6 +499,33 @@ public class GameDaoImpl implements GameDao {
     }
 
     @Override
+    public DefaultTableModel findMinAvgPlayersLeftInCountry(String Country) {
+        DefaultTableModel dm = new DefaultTableModel();
+        dm.addColumn("Sport Category");
+        dm.addColumn("Average Players Left");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+            stmt = conn.prepareStatement(MIN_AVG_PLAYERS_LEFT_COUNTRY);
+            stmt.setString(1, Country);
+            System.out.println(stmt);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String sport_category = rs.getString(1);
+                String min_avg_players = rs.getString(2);
+                dm.addRow(new String[]{sport_category, min_avg_players});
+            }
+            return dm;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            close(stmt);
+            close(conn);
+        }
+    }
+
+    @Override
     public DefaultTableModel findMostPlayedSportOfMonth() {
         DefaultTableModel dm = new DefaultTableModel();
         dm.addColumn("country");
@@ -551,7 +589,33 @@ public class GameDaoImpl implements GameDao {
 
 
     @Override
+    public boolean checkIfMatchExists(String userName, String gameName, String creationDate, String participant) throws SQLException {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try { // Transactional Function.
+            conn = getConnection();
+            conn.setAutoCommit(false);
+            stmt = conn.prepareStatement(DOES_MATCH_EXIST);
+            stmt.setString(1, userName);
+            stmt.setString(2, gameName);
+            stmt.setString(3, creationDate);
+            stmt.setString(4, participant);
+            System.out.println(stmt);
+            ResultSet rs = stmt.executeQuery();
+            if(rs.next()) return false;
+            return true;
+        } catch (SQLException e) {
+            conn.rollback(); // If there is any error.
+            return false;
+        } finally {
+            close(stmt);
+            close(conn);
+        }
+    }
+
+    @Override
     public boolean insertToMatchGameTableAndDownPlayers(String userName, String gameName, String creationDate, String participant, int gameNumOfPlayers) throws SQLException {
+        //if(!checkIfMatchExists(userName, gameName, creationDate, participant)) return false;
         Connection conn = null;
         PreparedStatement stmt = null;
         try { // Transactional Function.
