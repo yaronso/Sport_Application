@@ -1,18 +1,12 @@
 package GUI;
 
-import Dao.UserDao;
-import Dao.UserDaoImpl;
-import jdk.jshell.execution.Util;
-
+import Controllers.UserController;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,7 +16,6 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 public class ChangePassword extends JFrame {
-
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JTextField textField;
@@ -31,8 +24,7 @@ public class ChangePassword extends JFrame {
     /**
      * Create ChangePassword frame.
      */
-    public ChangePassword(String userName) throws IOException {
-        UserDao userDao = new UserDaoImpl();
+    public ChangePassword(String userName, UserController userController) throws IOException {
         setBounds(450, 360, 1024, 234);
         setResizable(false);
         contentPane = new JPanel();
@@ -51,15 +43,15 @@ public class ChangePassword extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String passTxt = textField.getText();
                 try {
-                    if(Utils.PropertiesReaders.isAnyObjectNull(passTxt)) {
+                    if (Utils.PropertiesReaders.isAnyObjectNull(passTxt)) {
                         JOptionPane.showMessageDialog(btnSearch, "Change Password Error: Please enter your new password.");
                         return;
                     }
-                    if(userDao.validPassword(userName).equals(passTxt)) {
+                    if (userController.validPassword(userName).equals(passTxt)) {
                         JOptionPane.showMessageDialog(btnSearch, "Change Password Error: Your new password similar to your old password.");
                         return;
                     }
-                    userDao.updateChangePass(passTxt, userName);
+                    userController.updateChangePass(passTxt, userName);
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }

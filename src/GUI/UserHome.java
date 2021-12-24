@@ -1,6 +1,8 @@
 package GUI;
 
 
+import Controllers.UserController;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -20,7 +22,7 @@ public class UserHome extends JFrame {
     /**
      * Create the UserHome frame.
      */
-    public UserHome(String userName) throws IOException {
+    public UserHome(String userName, UserController userController) throws IOException {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 1014, 597);
         setResizable(false);
@@ -79,7 +81,7 @@ public class UserHome extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 ChangePassword changePassword = null;
                 try {
-                    changePassword = new ChangePassword(userName);
+                    changePassword = new ChangePassword(userName, userController);
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }

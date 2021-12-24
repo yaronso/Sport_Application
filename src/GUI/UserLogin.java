@@ -1,7 +1,7 @@
 package GUI;
 
-import Dao.UserDao;
-import Dao.UserDaoImpl;
+import Controllers.UserController;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -26,7 +26,7 @@ public class UserLogin extends JFrame {
      * Create the login frame.
      */
     public UserLogin() throws IOException {
-        UserDao userDao = new UserDaoImpl();
+        UserController userController = new UserController();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 1014, 597);
         setResizable(false);
@@ -75,7 +75,7 @@ public class UserLogin extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 UserRegistration registerFrame = null;
                 try {
-                    registerFrame = new UserRegistration();
+                    registerFrame = new UserRegistration(userController);
                     registerFrame.setTitle("Register Page");
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
@@ -95,7 +95,7 @@ public class UserLogin extends JFrame {
                     dispose();
                     UserHome userHome = null;
                     try {
-                        userHome = new UserHome(userName);
+                        userHome = new UserHome(userName, userController);
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -104,9 +104,9 @@ public class UserLogin extends JFrame {
                     return;
                 }
                 try {
-                    if (userDao.userLogin(userName, password)) {
+                    if (userController.userLogin(userName, password)) {
                         dispose();
-                        UserHome userHome = new UserHome(userName);
+                        UserHome userHome = new UserHome(userName, userController);
                         userHome.setTitle("Welcome " + userName);
                         userHome.setVisible(true);
                     } else {

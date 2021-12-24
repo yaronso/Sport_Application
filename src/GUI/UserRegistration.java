@@ -1,17 +1,16 @@
 package GUI;
 
-import Dao.UserDao;
-import Dao.UserDaoImpl;
+import Controllers.UserController;
 import Models.User;
+import Utils.PropertiesReaders;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.concurrent.LinkedBlockingDeque;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -32,11 +31,11 @@ public class UserRegistration extends JFrame {
     private JButton btnNewButton;
 
 
+
     /**
      * Create the register frame.
      */
-    public UserRegistration() throws IOException {
-        UserDao userDao = new UserDaoImpl();
+    public UserRegistration(UserController userController) throws IOException {
         List userList = new List();
         setIconImage(Toolkit.getDefaultToolkit().getImage("C:\\Users\\User\\Desktop\\STDM.jpg"));
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -151,7 +150,7 @@ public class UserRegistration extends JFrame {
                 String userName = username.getText();
                 String mobileNumber = mob.getText();
                 String password = passwordField.getText();
-                if (Utils.PropertiesReaders.isAnyObjectNull(firstName, lastName, emailId, userName, password, mobileNumber)) {
+                if (PropertiesReaders.isAnyObjectNull(firstName, lastName, emailId, userName, password, mobileNumber)) {
                     JOptionPane.showMessageDialog(btnNewButton, "Please fill all the required fields.");
                     return;
                 }
@@ -163,7 +162,7 @@ public class UserRegistration extends JFrame {
                 userList.add(String.valueOf(user));
                 // Insert the new input user to the DataBase
                 try {
-                    rc = userDao.insert(user);
+                    rc = userController.insertNewUser(user);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }

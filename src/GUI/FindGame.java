@@ -1,17 +1,15 @@
 package GUI;
 
-import Dao.GameDao;
-import Dao.GameDaoImpl;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import Controllers.GameController;
 
 public class FindGame extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -22,8 +20,7 @@ public class FindGame extends JFrame {
 
     public void Init() throws IOException {
         // Initialization Objects:
-        GameDao gameDao = new GameDaoImpl();
-        //setResizable(false);
+        GameController gameController = new GameController();
         jPanel1 = new JPanel();
         jPanel2 = new JPanel();
         jScrollPane1 = new JScrollPane();
@@ -128,7 +125,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(findAccGameNameBtn, "Find Game Error: You must write the game name.");
                         return;
                     }
-                    dm = gameDao.findByGameName(gameName);
+                    dm = gameController.findByGameName(gameName);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -148,7 +145,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(findCityBtn, "Find City Error: You must write a city.");
                         return;
                     }
-                    dm = gameDao.findByCityName(city);
+                    dm = gameController.findByCityName(city);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -168,7 +165,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(findCountryBtn, "Find Country Error: You must write a country.");
                         return;
                     }
-                    dm = gameDao.findByCountryName(country);
+                    dm = gameController.findByCountryName(country);
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }
@@ -189,7 +186,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(findMaxLevelBtn, "Find Max Level Error: You must write the game's category.");
                         return;
                     }
-                    dm = gameDao.findMaxLevelGamesInEachCountry(max);
+                    dm = gameController.findMaxLevelGamesInEachCountry(max);
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }
@@ -209,7 +206,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(countryMostPlayedBtn, "Most Played Category In Country Error: You must write the Sport Category.");
                         return;
                     }
-                    dm = gameDao.findCountryMostPlayedSport(mostPlayedCountry);
+                    dm = gameController.findCountryMostPlayedSport(mostPlayedCountry);
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }
@@ -222,7 +219,7 @@ public class FindGame extends JFrame {
         mostPlayedSportOfMonthBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DefaultTableModel dm = null;
-                dm = gameDao.findMostPlayedSportOfMonth();
+                dm = gameController.findMostPlayedSportOfMonth();
                 statisticsTable.setModel(dm);
                 setViewTable(jScrollPaneStatistics, statisticsTable);
             }
@@ -238,7 +235,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(minAvgPlayersBtn, "Minimum Average Players Needed In Country Error: You must write the Country.");
                         return;
                     }
-                    dm = gameDao.findMinAvgPlayersLeftInCountry(mostPlayedCountry);
+                    dm = gameController.findMinAvgPlayersLeftInCountry(mostPlayedCountry);
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }
@@ -335,11 +332,11 @@ public class FindGame extends JFrame {
                                                                 .addGap(18, 18, 18))
 
 
-                                        .addGroup(jPanel2Layout.createSequentialGroup()
-                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
-                                                                .addComponent(clearBtn, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))))));
+                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                                .addComponent(clearBtn, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+                                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))))));
 
         // Add the background image
         BufferedImage myPicture = ImageIO.read(new File("src/GUI/continents-28616.png"));
@@ -393,8 +390,8 @@ public class FindGame extends JFrame {
 
                                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabelMostPlayedThisMonth)
-                                                    .addComponent(mostPlayedSportOfMonthBtn)
-                                                .addGap(51, 51, 51))
+                                                        .addComponent(mostPlayedSportOfMonthBtn)
+                                                        .addGap(51, 51, 51))
 
                                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                         .addComponent(jLabelMinAvgPlayersLeftInCountry)
