@@ -3,11 +3,14 @@ package DataBase;
 import javax.script.ScriptException;
 import java.io.*;
 import java.sql.*;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+/** The following class represents the database accessor instance.
+ *  Its functionality configure the database and run different scripts for different purposes.
+ *  Some of the scripts are configurations scripts and others scripts responsible to load the dataset
+ *  to our database schema's relevant tables.
+ */
 public class Database implements IDataBase {
     // Fields:
     private static final Logger logger = Logger.getLogger(Database.class.getName());
@@ -20,6 +23,7 @@ public class Database implements IDataBase {
     private static String DB_PASSWORD;
     private static String DB_NAME;
 
+    // CTR.
     private Database() throws IOException {
         this.propertiesArray = Utils.PropertiesReaders.getJDBCProperties();
         DB_DRIVER = propertiesArray[0];
@@ -44,14 +48,13 @@ public class Database implements IDataBase {
         return instance;
     }
 
+    // Returns the database connection.
     private Connection getConnection() {
         return this.connection;
     }
 
-    /**
-     * Getter for the DB connection for the main application class.
-     * @return
-     */
+
+    // Getter for the DB connection for the main application class.
     public Connection getDBConnection() {
         try {
             Class.forName(DB_DRIVER);
@@ -66,7 +69,7 @@ public class Database implements IDataBase {
         return connection;
     }
 
-
+    // The following function close the database connection.
     public void closeDBConnection(Connection connection) {
         if (connection != null) {
             try {
@@ -78,9 +81,7 @@ public class Database implements IDataBase {
     }
 
 
-    /**
-     * Set up the Database by triggering sql scripts.
-     */
+    // Set up the Database by triggering SQL scripts (create database, create tables).
     public void dataBaseConfig(Database db) {
         try {
             String CREATE_DB = "src/SqlUtils/createDB.sql";
@@ -106,6 +107,7 @@ public class Database implements IDataBase {
         }
     }
 
+    // The following function runs a SQL script which supplied as input path.
     @Override
     public int runSqlScript(String path) {
         String string;
@@ -139,25 +141,23 @@ public class Database implements IDataBase {
         return rc;
     }
 
-
+    // The following function trigger the flow of loading the CSV file (our dataset) to the relevant tables.
     public void loadDataSet() throws ScriptException, IOException, InterruptedException, SQLException {
-        if(isDataSetLoaded()) { // Check if the data set should be loaded.
+        if(isDataSetLoaded()) { // Check if the dataset was already loaded.
             System.out.println("The Data Set was already loaded to tables countries and cities.");
         } else {
             System.out.println("Loading the data set csv file.");
             createCostumeCsv();
             String csvFilePath1 = ".\\src\\DataBase\\countries_data.csv";
             String csvFilePath2 = ".\\src\\DataBase\\removed.csv";
-
             String sql1 = "INSERT INTO countries (country_name, country_id) VALUES (?, ?)";
             String sql2 = "INSERT INTO cities (city_name, country_id) VALUES (?, ?)";
-
             insertDb(sql1, csvFilePath1, 20);
             insertDb(sql2, csvFilePath2, 20);
         }
     }
 
-
+    // The following function check if the tables countries & cities were already fill up with the dataset.
     private boolean isDataSetLoaded() throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
