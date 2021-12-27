@@ -7,12 +7,17 @@ import javax.swing.table.DefaultTableModel;
 import java.io.IOException;
 import java.sql.SQLException;
 
-// The following class maps requests between the client side and the server/database side in context of game management, find games.
+/**
+ * The following class maps requests between the client side and the server/database side in any context that
+ * related to game management & find games application's windows.
+ */
 public class GameController {
+    // Field.
     GameDao gameDao;
 
+    // CTR.
     public GameController() throws IOException {
-        gameDao = new GameDaoImpl();
+        this.gameDao = new GameDaoImpl();
     }
 
     public Boolean deleteFromMatchGames(String userName, String gameName) throws SQLException {

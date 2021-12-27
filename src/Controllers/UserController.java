@@ -3,14 +3,18 @@ package Controllers;
 import Dao.UserDao;
 import Dao.UserDaoImpl;
 import Models.User;
-
 import java.io.IOException;
 import java.sql.SQLException;
 
-// The following class maps requests between the client side and the server/database side in context of user login, registration & change password.
-public class UserController {
+/**
+ * The following class maps requests between the client side and the server/database side in any context that
+ * related to user login, registration & change password.
+ */
+ public class UserController {
+     // Field.
     public UserDao userDao;
 
+    // CTR.
     public UserController() throws IOException {
         this.userDao = new UserDaoImpl();
     }

@@ -7,7 +7,10 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-
+/**
+ * The following class is a concrete implementation of the interface GameDao.
+ * This class access the database by using the JDBC API of Java.
+ */
 public class GameDaoImpl implements GameDao {
     // Fields:
     private final String DB_DRIVER;
@@ -21,8 +24,8 @@ public class GameDaoImpl implements GameDao {
     private static final String INSERT_MATCH_GAMES = "INSERT IGNORE INTO match_games(user_name, game_name, creation_date, participant) VALUES(?, ?, ?, ?)";
     private static final String DOES_MATCH_EXIST = "SELECT * FROM match_games WHERE user_name = ? and game_name = ? and creation_date = ? and participant = ?";
     private static final String INSERT_SELECT_ZERO_GAME = "INSERT IGNORE INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) " +
-                                                            "SELECT user_name, game_name, game_date, creation_date, city, sport_category, players + 1, level " +
-                                                                " FROM game_details_archives WHERE game_name=?";
+            "SELECT user_name, game_name, game_date, creation_date, city, sport_category, players + 1, level " +
+            " FROM game_details_archives WHERE game_name=?";
 
     // SET FOREIGN_KEY_CHECKS Statement:
     private static final String SET_FOREIGN_KEY_CHECKS = "SET FOREIGN_KEY_CHECKS = ?";
@@ -38,12 +41,12 @@ public class GameDaoImpl implements GameDao {
     private static final String IS_CITY_EXISTS = "SELECT city_name FROM cities WHERE city_name = ?";
 
     private static final String FIND_ALL_GAMES = "SELECT distinct t1.user_name, t1.game_name, t1.sport_category, t3.country_name, t1.city, t1.game_date, t1.players, t1.level, t1.creation_date\n" +
-                "         FROM game_details as t1\n" +
-                "         JOIN cities as t2\n" +
-                "         ON t1.city = t2.city_name\n" +
-                "         JOIN countries as t3\n" +
-                "         ON t2.country_id = t3.country_id\n" +
-                "         ORDER BY unix_timestamp(t1.game_date)";
+            "         FROM game_details as t1\n" +
+            "         JOIN cities as t2\n" +
+            "         ON t1.city = t2.city_name\n" +
+            "         JOIN countries as t3\n" +
+            "         ON t2.country_id = t3.country_id\n" +
+            "         ORDER BY unix_timestamp(t1.game_date)";
 
 
     private static final String GET_ALL_GAME_MATCHES = "SELECT user_name, game_name, creation_date, participant FROM match_games WHERE participant = ?";
@@ -92,49 +95,50 @@ public class GameDaoImpl implements GameDao {
 
     // find the country where sport ? is most played.
     private static final String MOST_PLAYED_SPORT_COUNTRY = "SELECT t3.country_name\n" +
-                                                    "         FROM game_details as t1\n" +
-                                                        "         JOIN cities as t2\n" +
-                                                        "         ON t1.city = t2.city_name\n" +
-                                                        "         JOIN countries as t3\n" +
-                                                        "         ON t2.country_id = t3.country_id\n" +
-                                                        "         WHERE t1.sport_category = ? \n" +
-                                                                    "GROUP BY t3.country_name\n" +
-                                                                    "ORDER BY COUNT(*) DESC\n" +
-                                                                                    "LIMIT 1";
+            "         FROM game_details as t1\n" +
+            "         JOIN cities as t2\n" +
+            "         ON t1.city = t2.city_name\n" +
+            "         JOIN countries as t3\n" +
+            "         ON t2.country_id = t3.country_id\n" +
+            "         WHERE t1.sport_category = ? \n" +
+            "GROUP BY t3.country_name\n" +
+            "ORDER BY COUNT(*) DESC\n" +
+            "LIMIT 1";
 
     // Find the most played sport in the current month (statistics).
     private static final String  MOST_PLAYED_SPORT_OF_MONTH = "SELECT distinct t1.sport_category " +
-                                                                "FROM game_details as t1 " +
-                                                                "WHERE month(t1.game_date) = (SELECT MONTH(CURDATE())) " +
-                                                                "GROUP BY t1.sport_category " +
-                                                                 "ORDER BY COUNT(*) DESC LIMIT 1";
+            "FROM game_details as t1 " +
+            "WHERE month(t1.game_date) = (SELECT MONTH(CURDATE())) " +
+            "GROUP BY t1.sport_category " +
+            "ORDER BY COUNT(*) DESC LIMIT 1";
 
     private static final String MIN_AVG_PLAYERS_LEFT_COUNTRY = "SELECT distinct t1.sport_category, avg(t1.players) as avg_players\n" +
-                                                                 "    FROM game_details as t1 JOIN cities as t2\n" +
-                                                                 "    ON t1.city = t2.city_name\n" +
-                                                                 "    JOIN countries as t3\n" +
-                                                                 "    ON t2.country_id = t3.country_id\n" +
-                                                                 "      where t3.country_name = ?\n" +
-                                                                 "      group by t1.sport_category\n" +
-                                                                 "      order by avg_players asc\n" +
-                                                                 "      limit 1";
+            "    FROM game_details as t1 JOIN cities as t2\n" +
+            "    ON t1.city = t2.city_name\n" +
+            "    JOIN countries as t3\n" +
+            "    ON t2.country_id = t3.country_id\n" +
+            "      where t3.country_name = ?\n" +
+            "      group by t1.sport_category\n" +
+            "      order by avg_players asc\n" +
+            "      limit 1";
 
     // Update Statements:
     private static final String UPDATE_GAME_LEVEL = "UPDATE game_details SET players = ? WHERE game_name = ?";
 
     private static final String FIND_GAME_CURR_ROW = "SELECT game_name FROM game_details\n" +
-                                                        "ORDER BY unix_timestamp(game_date)\n" +
-                                                            "LIMIT ?, 1";
+            "ORDER BY unix_timestamp(game_date)\n" +
+            "LIMIT ?, 1";
 
 
     private static final String UPDATE_GAME_DETAILS = "UPDATE game_details SET game_name = ?, game_date = ?, city = ? ,sport_category = ?, " +
-                                                        "players = ?, level =? WHERE game_name = ?";
+            "players = ?, level =? WHERE game_name = ?";
 
     private static final String UPDATE_MATCH_GAMES = "UPDATE match_games SET game_name = ? WHERE game_name = ?";
 
 
+    // CTR.
     public GameDaoImpl() throws IOException {
-        String[] propertiesArray = Utils.PropertiesReaders.getJDBCProperties();
+        String[] propertiesArray = Utils.PropertiesReaders.getJDBCProperties(); // Read the database properties.
         DB_DRIVER = propertiesArray[0];
         DB_URL = propertiesArray[1];
         DB_USER = propertiesArray[2];
@@ -142,7 +146,7 @@ public class GameDaoImpl implements GameDao {
         DB_NAME = propertiesArray[4];
     }
 
-
+    // Receive the database connection.
     @Override
     public Connection getConnection() {
         try {
@@ -164,7 +168,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-    // Query Statement close
+    // Query Statement close.
     public static void close(Statement stmt) {
         if (stmt != null) {
             try {
@@ -175,7 +179,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-
+    // The following function performs a delete statement from the match_games table.
     @Override
     public Boolean deleteFromMatchGames(String participant, String gameName) throws SQLException {
         Connection connection = null;
@@ -205,6 +209,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    // The following function performs a delete statement from the game_details table.
     @Override
     public Boolean deleteGame(String gameName, String creationDate) throws SQLException {
         Connection connection = null;
@@ -246,6 +251,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    // The following function performs a delete statement of a game from match_game table.
     private boolean deleteAllGameMatches(Connection connection, PreparedStatement stmt, String gameName, String creationDate) {
         try {
             stmt = connection.prepareStatement(DELETE_GAME_FROM_ALL_MATCH_TABLES);
@@ -260,7 +266,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-    // General Method.
+    // General Method that returns a built in DefaultTableModel object for the client side.
     private DefaultTableModel buildDefaultTableModel() {
         DefaultTableModel dm = new DefaultTableModel();
         dm.addColumn("user_name");
@@ -275,7 +281,7 @@ public class GameDaoImpl implements GameDao {
         return dm;
     }
 
-    // General Method.
+    // General Method that returns an array of strings.
     private String[] resultSetStrings(ResultSet rs) throws SQLException {
         String game_name = rs.getString(1);
         String user_name = rs.getString(2);
@@ -291,6 +297,7 @@ public class GameDaoImpl implements GameDao {
 
 
     // "SELECT distinct t1.user_name, t1.game_name, t1.sport_category, t1.game_date, t3.country_name, t1.city, t1.players, t1.level\n" +
+    // The following function retrieve the whole games details from table game_details.
     @Override
     public DefaultTableModel findAllGames() throws SQLException {
         DefaultTableModel dm = buildDefaultTableModel();
@@ -316,6 +323,7 @@ public class GameDaoImpl implements GameDao {
         return null;
     }
 
+    // The following function returns an object of type DefaultTableModel with all the match games of the current user.
     @Override
     public DefaultTableModel findMatches(String userName) throws SQLException {
         DefaultTableModel dm = new DefaultTableModel();
@@ -351,6 +359,7 @@ public class GameDaoImpl implements GameDao {
         return null;
     }
 
+    // The following function finds the current selected row of a game inside the table game_details
     @Override
     public String findColumnRow(int currentRow, String flag) throws SQLException {
         Connection conn = null;
@@ -379,6 +388,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    // The following function finds the details of specific according its name as input (FindGame).
     @Override
     public DefaultTableModel findByGameName(String gameName) throws SQLException {
         DefaultTableModel dm = buildDefaultTableModel();
@@ -404,6 +414,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    // The following function finds the details of specific according its city as input (FindGame).
     public DefaultTableModel findByCityName(String city) throws SQLException {
         DefaultTableModel dm = buildDefaultTableModel();
         Connection conn = null;
@@ -427,7 +438,7 @@ public class GameDaoImpl implements GameDao {
             rs.close();
         }
     }
-
+    // The following function finds the details of specific according its country as input (FindGame).
     @Override
     public DefaultTableModel findByCountryName(String countryName) {
         DefaultTableModel dm = buildDefaultTableModel();
@@ -451,6 +462,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    // The following function finds the details of all the games with max level under an input sport category (FindGame).
     public DefaultTableModel findMaxLevelGamesInEachCountry(String category) {
         DefaultTableModel dm = buildDefaultTableModel();
         Connection conn = null;
@@ -473,6 +485,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    // The following function finds the country where sport ? is most played (FindGame).
     @Override
     public DefaultTableModel findCountryMostPlayedSport(String sportCategory) {
         DefaultTableModel dm = new DefaultTableModel();
@@ -498,6 +511,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    // TODO -
     @Override
     public DefaultTableModel findMinAvgPlayersLeftInCountry(String Country) {
         DefaultTableModel dm = new DefaultTableModel();
@@ -525,6 +539,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    // The following function finds the most played sport of the current month (FindGame - Statistics table).
     @Override
     public DefaultTableModel findMostPlayedSportOfMonth() {
         DefaultTableModel dm = new DefaultTableModel();
@@ -549,7 +564,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-
+    // The following function inserts an entry to table game_details in Transactional methodology.
     @Override
     public boolean insertGameDetails(String userName, Game game) throws SQLException {
         Connection conn = null;
@@ -558,7 +573,6 @@ public class GameDaoImpl implements GameDao {
         try { // Transactional Function.
             conn = getConnection();
             conn.setAutoCommit(false);
-            // "INSERT IGNORE INTO game_details(user_name, game_name, game_date, creation_date, city, sport_category, players, level) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(INSERT_GAME_DETAILS, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, userName);
             stmt.setString(2, game.getGameName());
@@ -587,7 +601,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-
+    // The following function verifies if the input record is already exists in table match_games.
     @Override
     public boolean checkIfMatchExists(String userName, String gameName, String creationDate, String participant) throws SQLException {
         Connection conn = null;
@@ -613,9 +627,10 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    // The following function inserts a record to match_games table
+    // & downgrade the number of player of the relevant game in table game_details (Transactional).
     @Override
     public boolean insertToMatchGameTableAndDownPlayers(String userName, String gameName, String creationDate, String participant, int gameNumOfPlayers) throws SQLException {
-        //if(!checkIfMatchExists(userName, gameName, creationDate, participant)) return false;
         Connection conn = null;
         PreparedStatement stmt = null;
         try { // Transactional Function.
@@ -644,7 +659,8 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-
+    // The following function get the current number of players in a specific game and upgrade the number of players
+    // in table game_details in case of delete game from match_games table.
     @Override
     public boolean getCurrNumPlayersAndUpdatePlayers(Connection conn, PreparedStatement stmt, String gameName)  {
         ResultSet rs;
@@ -667,7 +683,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-
+    // The following function inserts a record to table match_games.
     @Override
     public boolean insertToMatchGameTable(Connection connection, PreparedStatement stmt, String userName, String gameName, String creationDate, String participant) {
         try {
@@ -684,7 +700,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-
+    // The following function verifies if the tables countries & cities are already filled upo.
     @Override
     public boolean isCountryOrCityValid(String input, String flag) throws SQLException {
         PreparedStatement stmt = null;
@@ -716,7 +732,8 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-
+    // The following function is triggered with two optional flags: DownPlayer in case of a match and UpPlayer in case
+    // of deleting a match from match_games.
     @Override
     public boolean updateGameLevel(Connection connection, PreparedStatement stmt, String gameName, int gameNumOfPlayers, String flag, String creationDate) {
         boolean isPlayersZero = false;
@@ -733,16 +750,16 @@ public class GameDaoImpl implements GameDao {
             stmt.setString(2, gameName);
             System.out.println(stmt);
             stmt.execute();
-            if (isPlayersZero) { // If the number of players in game_details is zero delete this game from game_details and alert the creator user!
+            if (isPlayersZero) { // If the number of players in game_details is zero delete this game from game_details.
                 if(removeGameFromGameDetails(connection, stmt, gameName, creationDate)) { /* Store the game details before deleting it using BEFORE DELETE TRIGGER. */
-                    System.out.println("BEFORE DELETE Trigger - game is zero"); // 	Debug print
+                    System.out.println("BEFORE DELETE Trigger - game is zero"); // 	TODO - Debug print (remove)
                     return true;
                 } else {
                     return false;
                 }
-            } if (isGameBack) { // Insert the game back to game details.
+            } if (isGameBack) { // Insert the game back to game details table from the archive table.
                 if(retrieveTheArchivedGame(connection, stmt, gameName)) {
-                    System.out.println("GameBack"); // 	Debug print
+                    System.out.println("GameBack"); // TODO - Debug print (remove)
                     return true;
                 } else {
                     return false;
@@ -754,20 +771,21 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-
+    // The following function retrieves the archive game & insert its record to game_details table.
     private boolean retrieveTheArchivedGame(Connection connection, PreparedStatement stmt, String gameName) throws SQLException {
         try {
             stmt = connection.prepareStatement(INSERT_SELECT_ZERO_GAME, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, gameName);
             System.out.println(stmt);
-            stmt.executeUpdate(); 
+            stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
             return false;
         }
     }
 
-
+    // The following function holds the implementation of the trigger that save the deleted game record inside the
+    // game details archive table before its deletion from the real game details table.
     private boolean removeGameFromGameDetails(Connection connection, PreparedStatement stmt, String gameName, String creationDate) {
         PreparedStatement foreignStmt;
         try { // Using BEFORE DELETE TRIGGER
@@ -790,7 +808,7 @@ public class GameDaoImpl implements GameDao {
             triggerBuilder.append(" END ");
             System.out.println(triggerBuilder.toString());
             connection.createStatement().execute(triggerBuilder.toString());
-            
+
             foreignStmt = connection.prepareStatement(SET_FOREIGN_KEY_CHECKS);
             foreignStmt.setInt(1, 0);
             System.out.println(foreignStmt);
@@ -814,7 +832,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
-
+    // The following function update a specific game's details according the user inputs (the user most be the creator of the game).
     @Override
     public boolean updateGameFullDetails(Game game, String oldGame) throws SQLException {
         Connection conn = null;
@@ -861,6 +879,7 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    // The following function updates a record in table match_games table.
     private boolean updateMatchGames(Connection conn, PreparedStatement stmt, String gameName, String oldGame) {
         try {
             stmt = conn.prepareStatement(UPDATE_MATCH_GAMES);
@@ -875,4 +894,3 @@ public class GameDaoImpl implements GameDao {
     }
 
 }
-

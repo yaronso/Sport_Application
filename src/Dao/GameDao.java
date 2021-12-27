@@ -6,6 +6,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+/**
+*  The following interface is a part of DAO design pattern for the object Game under the package Models.
+ *  Each method demonstrates different database's queries, updates & responses for the relevant games
+ *  tables in different manner in our database schema.
+ *   Each of the below methods is triggered by the class GameController which triggered by the client side inside GUI package.
+ */
 public interface GameDao {
     Connection getConnection();
     Boolean deleteFromMatchGames(String userName, String gameName) throws SQLException;

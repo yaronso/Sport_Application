@@ -1,11 +1,13 @@
 package Dao;
 
 import Models.User;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
-import java.util.Properties;
 
+/**
+ * The following class is a concrete implementation of the interface UserDao.
+ * This class access the database by using the JDBC API of Java.
+ */
 public class UserDaoImpl implements UserDao {
     // Fields:
     private final String DB_DRIVER;
@@ -21,7 +23,7 @@ public class UserDaoImpl implements UserDao {
 
     // CTR
     public UserDaoImpl() throws IOException {
-        String[] propertiesArray = Utils.PropertiesReaders.getJDBCProperties();
+        String[] propertiesArray = Utils.PropertiesReaders.getJDBCProperties(); // Read the database properties.
         DB_DRIVER = propertiesArray[0];
         DB_URL = propertiesArray[1];
         DB_USER = propertiesArray[2];
@@ -29,7 +31,7 @@ public class UserDaoImpl implements UserDao {
         DB_NAME = propertiesArray[4];
     }
 
-
+    // Receive the database connection.
     private Connection getConnection() {
         try {
             Class.forName(DB_DRIVER);
@@ -39,6 +41,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    // DB Connection close.
     private static void close(Connection con) {
         if (con != null) {
             try {
@@ -49,6 +52,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    // Query Statement close.
     private static void close(Statement stmt) {
         if (stmt != null) {
             try {
@@ -59,8 +63,8 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-
-    public int insert(User user) throws SQLException {
+    // The following function insert a new user record to users table (Registration).
+    public int insertNewUser(User user) throws SQLException {
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -88,6 +92,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    // The following function change the user's password according his new input.
     public int updateChangePass(String pstr, String userName) {
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -105,6 +110,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    // The following function performs the user's login to the application (if the user was already registered).
     @Override
     public boolean userLogin(String userName, String password) throws SQLException {
         Connection connection = null;
@@ -131,6 +137,7 @@ public class UserDaoImpl implements UserDao {
         return false;
     }
 
+    // The following function perform a user's password validation in case of change password by the user.
     @Override
     public String validPassword(String userName) throws SQLException {
         Connection connection = null;
@@ -157,7 +164,4 @@ public class UserDaoImpl implements UserDao {
             rs.close();
         }
     }
-
-
-
 }

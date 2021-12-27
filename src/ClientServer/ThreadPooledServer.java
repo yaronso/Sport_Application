@@ -6,7 +6,12 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+* The following class represent the thread pool class. its the server of the application which handle clients
+ * requests. the thread pool listens for clients requests on a specific host & port according the file transport.properties.
+ **/
 public class ThreadPooledServer implements Runnable {
+    // Fields:
     protected int          serverPort   = 8080;
     protected ServerSocket serverSocket = null;
     protected boolean      isStopped    = false;
@@ -21,6 +26,7 @@ public class ThreadPooledServer implements Runnable {
         threadPool = Executors.newFixedThreadPool(Integer.parseInt(transportProps[2]));
     }
 
+    // Overrides the function runnable as a part of implementing the interface Runnable.
     public void run(){
         synchronized(this){
             this.runningThread = Thread.currentThread();
