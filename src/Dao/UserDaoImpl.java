@@ -21,7 +21,10 @@ public class UserDaoImpl implements UserDao {
     private static final String USER_LOGIN = "Select user_name, password from users where user_name=? and password=?";
     private static final String CHECK_PW = "Select password from users where user_name=?";
 
-    // CTR
+    /**
+     * Class Constructor
+     * @throws IOException
+     */
     public UserDaoImpl() throws IOException {
         String[] propertiesArray = Utils.PropertiesReaders.getJDBCProperties(); // Read the database properties.
         DB_DRIVER = propertiesArray[0];
@@ -31,7 +34,10 @@ public class UserDaoImpl implements UserDao {
         DB_NAME = propertiesArray[4];
     }
 
-    // Receive the database connection.
+    /**
+     * Receive the database connection.
+     * @return Connection
+     */
     private Connection getConnection() {
         try {
             Class.forName(DB_DRIVER);
@@ -41,7 +47,10 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    // DB Connection close.
+    /**
+     * DB Connection close.
+     * @param con
+     */
     private static void close(Connection con) {
         if (con != null) {
             try {
@@ -52,7 +61,11 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    // Query Statement close.
+
+    /**
+     * Query Statement close.
+     * @param stmt
+     */
     private static void close(Statement stmt) {
         if (stmt != null) {
             try {
@@ -63,7 +76,12 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    // The following function insert a new user record to users table (Registration).
+    /**
+     * The following function insert a new user record to users table (Registration).
+     * @param user
+     * @return
+     * @throws SQLException
+     */
     public int insertNewUser(User user) throws SQLException {
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -92,7 +110,13 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    // The following function change the user's password according his new input.
+    /**
+     * The following function change the user's password according his new input.
+     * @param pstr
+     * @param userName
+     * @return int
+     */
+
     public int updateChangePass(String pstr, String userName) {
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -110,7 +134,13 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    // The following function performs the user's login to the application (if the user was already registered).
+    /**
+     * The following function performs the user's login to the application (if the user was already registered).
+     * @param userName
+     * @param password
+     * @return boolean
+     * @throws SQLException
+     */
     @Override
     public boolean userLogin(String userName, String password) throws SQLException {
         Connection connection = null;
@@ -137,7 +167,11 @@ public class UserDaoImpl implements UserDao {
         return false;
     }
 
-    // The following function perform a user's password validation in case of change password by the user.
+    /**
+     *  The following function perform a user's password validation in case of change password by the user.
+     * @param userName
+     * @return String
+     */
     @Override
     public String validPassword(String userName) throws SQLException {
         Connection connection = null;

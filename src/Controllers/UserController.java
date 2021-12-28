@@ -14,7 +14,10 @@ import java.sql.SQLException;
      // Field.
     public UserDao userDao;
 
-    // CTR.
+    /**
+     * Class Constructor
+     * @throws IOException
+     */
     public UserController() throws IOException {
         this.userDao = new UserDaoImpl();
     }

@@ -15,7 +15,10 @@ public class GameController {
     // Field.
     GameDao gameDao;
 
-    // CTR.
+    /**
+     * Class Constructor
+     * @throws IOException
+     */
     public GameController() throws IOException {
         this.gameDao = new GameDaoImpl();
     }
