@@ -18,7 +18,11 @@ public class ThreadPooledServer implements Runnable {
     protected Thread       runningThread= null;
     protected ExecutorService threadPool; // Can Handling 10 clients
 
-    // CTR
+    /**
+     * Class Constructor.
+     * @param port
+     * @throws IOException
+     */
     public ThreadPooledServer(int port) throws IOException {
         this.serverPort = port;
         String[] transportProps = Utils.PropertiesReaders.getTransportProperties();
@@ -26,7 +30,9 @@ public class ThreadPooledServer implements Runnable {
         threadPool = Executors.newFixedThreadPool(Integer.parseInt(transportProps[2]));
     }
 
-    // Overrides the function runnable as a part of implementing the interface Runnable.
+    /**
+     * Overrides the function runnable as a part of implementing the interface Runnable.
+     */
     public void run(){
         synchronized(this){
             this.runningThread = Thread.currentThread();

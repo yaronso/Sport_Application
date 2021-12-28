@@ -15,6 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * The following class represents the change password window of our application.
+ */
 public class ChangePassword extends JFrame {
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
@@ -43,15 +46,15 @@ public class ChangePassword extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String passTxt = textField.getText();
                 try {
-                    if (Utils.PropertiesReaders.isAnyObjectNull(passTxt)) {
+                    if (Utils.PropertiesReaders.isAnyObjectNull(passTxt)) { // Verify that the input password is not null.
                         JOptionPane.showMessageDialog(btnSearch, "Change Password Error: Please enter your new password.");
                         return;
                     }
-                    if (userController.validPassword(userName).equals(passTxt)) {
+                    if (userController.validPassword(userName).equals(passTxt)) { // Verify that the user's new password is different from its old password.
                         JOptionPane.showMessageDialog(btnSearch, "Change Password Error: Your new password similar to your old password.");
                         return;
                     }
-                    userController.updateChangePass(passTxt, userName);
+                    userController.updateChangePass(passTxt, userName); // Triggers the UserController in order to update the user's password inside the database.
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }

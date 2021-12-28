@@ -1,8 +1,6 @@
 package GUI;
 
-
 import Controllers.UserController;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -14,8 +12,11 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * The following class represents main window of our application.
+ */
 public class UserHome extends JFrame {
-
+    // Fields:
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
 
@@ -40,7 +41,7 @@ public class UserHome extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 FindGame findGame = null;
                 try {
-                    findGame = new FindGame();
+                    findGame = new FindGame(); // Opens the FindGame window.
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
@@ -62,7 +63,7 @@ public class UserHome extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 JoinGame joinGame = null;
                 try {
-                    joinGame = new JoinGame(userName);
+                    joinGame = new JoinGame(userName); // Opens the Games Management window.
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
@@ -81,7 +82,7 @@ public class UserHome extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 ChangePassword changePassword = null;
                 try {
-                    changePassword = new ChangePassword(userName, userController);
+                    changePassword = new ChangePassword(userName, userController); // Opens the Change password window.
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }

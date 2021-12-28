@@ -3,9 +3,15 @@ package Utils;
 import java.io.*;
 import java.util.Properties;
 
-// Utils class include utilities functions.
+/**
+ * The following class is a utilities class that include different utilities functions.
+ */
 public class PropertiesReaders {
-
+    /**
+     * The following function reads the content of the config file: jdbc.properties for the database connection.
+     * @return String[] array with the database details.
+     * @throws IOException
+     */
     public static String[] getJDBCProperties() throws IOException {
         String[] propertiesArray = new String[5];
         Properties props = new Properties();
@@ -20,6 +26,11 @@ public class PropertiesReaders {
         return propertiesArray;
     }
 
+    /**
+     * The following function reads the content of the config file: transport.properties for the thread pool connection.
+     * @return String[] array with the transport details.
+     * @throws IOException
+     */
     public static String[] getTransportProperties() throws IOException {
         String[] propertiesArray = new String[5];
         Properties props = new Properties();
@@ -32,6 +43,11 @@ public class PropertiesReaders {
         return propertiesArray;
     }
 
+    /**
+     * The following function verify that an input of objects are not null.
+     * @param objects
+     * @return true if any object is null, otherwise false.
+     */
     public static boolean isAnyObjectNull(Object... objects) {
         for (Object o : objects) {
             if (o.equals("")){

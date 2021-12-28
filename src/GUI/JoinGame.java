@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import Controllers.GameController;
 
+/**
+ * The following class represents the Game Management window of our application.
+ */
 public class JoinGame extends JFrame {
     private static final long serialVersionUID = 1L;
     // CTR - invoke init Components method
@@ -21,7 +24,11 @@ public class JoinGame extends JFrame {
         initComponents(userName);
     }
 
-    // Retrieve the games table to the application screen
+    /**
+     * Retrieve the games table to the application screen
+     * @param gameController
+     * @throws SQLException
+     */
     private void retrieve(GameController gameController) throws SQLException {
         DefaultTableModel dm = gameController.findAllGames();
         jTable1.setModel(dm);
@@ -148,7 +155,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
-                    addBtnActionPerformed(evt, userName, gameController, addBtn);
+                    addBtnActionPerformed(evt, userName, gameController, addBtn); // Add/Create a new game.
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -160,7 +167,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
-                    updateBtnActionPerformed(evt, userName, gameController, jTable1, updateBtn);
+                    updateBtnActionPerformed(evt, userName, gameController, jTable1, updateBtn); // Update selected game's details.
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -172,7 +179,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
-                    DeleteActionPerformed(evt, userName, gameController, jTable1, Delete);
+                    DeleteActionPerformed(evt, userName, gameController, jTable1, Delete); // delete selected games.
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -184,7 +191,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPaneMatchGames, matchGamesTable);
                 try {
-                    DeleteMatchActionPerformed(evt, userName, gameController, matchGamesTable, deleteMatch);
+                    DeleteMatchActionPerformed(evt, userName, gameController, matchGamesTable, deleteMatch); // delete selected game from personal match games table.
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -204,7 +211,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPane1, jTable1);
                 try {
-                    joinGameBtnActionPerformed(evt, userName, gameController, joinGameButton);
+                    joinGameBtnActionPerformed(evt, userName, gameController, joinGameButton); // join a game.
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -216,7 +223,7 @@ public class JoinGame extends JFrame {
             public void actionPerformed(ActionEvent evt) {
                 setViewTable(jScrollPaneMatchGames, matchGamesTable);
                 try {
-                    retrieveMatches(gameController, userName);
+                    retrieveMatches(gameController, userName); // retrieve the content of table match_games for the current user.
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -238,30 +245,30 @@ public class JoinGame extends JFrame {
                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                        .addGroup(GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(jLabelGameName)
-                                                                        .addComponent(jLabelSportCategory))
-                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(jLabelGameName)
+                                                                .addGap(40, 40, 40)
+                                                                .addComponent(gameNameTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(gameNameTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(sportCategoryTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
-                                                                .addGap(21, 21, 21))
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(jLabelSportCategory)
+                                                                .addGap(25, 25, 25)
+                                                                .addComponent(sportCategoryTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
 
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                 .addComponent(jLabelCountry)
-                                                                .addGap(18, 18, 18)
+                                                                .addGap(65, 65, 65)
                                                                 .addComponent(countryTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
 
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                 .addComponent(jLabelCity)
-                                                                .addGap(18, 18, 18)
+                                                                .addGap(90, 90, 90)
                                                                 .addComponent(cityTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
+
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                 .addComponent(jLabelDate)
-                                                                .addGap(18, 18, 18)
+                                                                .addGap(85, 85, 85)
                                                                 .addComponent(dateTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
                                                                 .addGap(18, 18, 18)
                                                                 .addComponent(dateButton)
@@ -269,11 +276,11 @@ public class JoinGame extends JFrame {
                                                         )
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                 .addComponent(jLabelPlayers)
-                                                                .addGap(18, 18, 18)
+                                                                .addGap(70, 70, 70)
                                                                 .addComponent(playersTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                 .addComponent(jLabelGameLevel)
-                                                                .addGap(18, 18, 18)
+                                                                .addGap(85, 85, 85)
                                                                 .addComponent(levelTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)))
                                                 .addGap(0, 9, Short.MAX_VALUE))
 
@@ -420,7 +427,7 @@ public class JoinGame extends JFrame {
                 JOptionPane.showMessageDialog(deleteMatch, "Delete Match Error: You must choose a match game from your games list to delete.");
                 return;
             }
-            // The delete query can be only executed by the user who created the game , update the game level with ++1 at the game management table.
+            // The delete query can be only executed by the user who created the game.
             String gameName = matchGamesTable.getValueAt(currRow, 1).toString();
             if (gameController.deleteFromMatchGames(participant, gameName)) { /* if succeeded to delete from matches table Transactional */
                 JOptionPane.showMessageDialog(null, "Deleted Updated");
@@ -448,8 +455,7 @@ public class JoinGame extends JFrame {
     }
 
 
-    // When a user click to join a new game
-    // "INSERT IGNORE INTO match_games(user_name, game_name, creation_date, participant) VALUES(?, ?, ?, ?)";
+    // When a user click to join a new game.
     private void joinGameBtnActionPerformed(ActionEvent evt, String participant, GameController gameController, JButton joinGameButton) throws SQLException {
         int currRow = jTable1.getSelectedRow();
         if (Utils.PropertiesReaders.isAnyObjectNull(currRow) || currRow == -1) {
@@ -458,8 +464,7 @@ public class JoinGame extends JFrame {
         }
         String userName = jTable1.getValueAt(currRow, 0).toString();
         String creationDate = jTable1.getValueAt(currRow, 8).toString();
-        // TODO - check the user does not have this match game in its table!
-        if(!gameController.checkIfMatchExists(userName, gameNameTxt.getText(), creationDate, participant)) {
+        if(!gameController.checkIfMatchExists(userName, gameNameTxt.getText(), creationDate, participant)) { // Verify that the user was not sign in to this game already.
             JOptionPane.showMessageDialog(null, "You're already signed up to this game.");
         } else {
             if(gameController.insertToMatchGameTableAndDownPlayers(userName, gameNameTxt.getText(), creationDate, participant, Integer.parseInt(playersTxt.getText()))) { // Transactional Function.
@@ -498,7 +503,7 @@ public class JoinGame extends JFrame {
             return;
         }
         Game game = new Game(gameName, category, country, city, date, Integer.parseInt(players), Integer.parseInt(level));
-        if (gameController.insertGameDetails(userName, game)) { // Transactional.
+        if (gameController.insertGameDetails(userName, game)) { // Transactional Function.
             JOptionPane.showMessageDialog(addBtn, "Add Game Succeeded.");
             retrieve(gameController);
             retrieveMatches(gameController, userName);
@@ -526,7 +531,7 @@ public class JoinGame extends JFrame {
         levelTxt.setText(level);
     }
 
-    // Execute update query for all the game tables
+    // Execute update query for all the game tables.
     private void updateBtnActionPerformed(ActionEvent evt, String participant, GameController gameController, JTable jTable1, JButton updateBtn) throws SQLException {
         int currRow = jTable1.getSelectedRow();
         if (Utils.PropertiesReaders.isAnyObjectNull(currRow) || currRow == -1) {
@@ -543,14 +548,13 @@ public class JoinGame extends JFrame {
             return;
         }
         String userName = jTable1.getValueAt(currRow, 0).toString();
-        // The update query can be only executed by the user who created the game
-        if (userName.equals(participant)) {
+        if (userName.equals(participant)) { // The update query can be only executed by the user who created the game.
             System.out.println("currRow selected is " + currRow);
             Game game = new Game(gameNameTxt.getText(), sportCategoryTxt.getText(), countryTxt.getText(), cityTxt.getText(), dateTxt.getText(), Integer.parseInt(playersTxt.getText()), Integer.parseInt(levelTxt.getText()));
-            String oldGameName = gameController.findColumnRow(currRow, "GameName"); // Cursor: The game that the user want to update/replace
-            if(gameController.updateGameFullDetails(game, oldGameName)) { // Transactional.
+            String oldGameName = gameController.findColumnRow(currRow, "GameName"); // Cursor: The game that the user want to update/replace.
+            if(gameController.updateGameFullDetails(game, oldGameName)) { // Transactional Function.
                 JOptionPane.showMessageDialog(null, "Game details were updated");
-                // Clear the text fields
+                // Clear the text fields.
                 gameNameTxt.setText("");
                 sportCategoryTxt.setText("");
                 countryTxt.setText("");
@@ -575,13 +579,13 @@ public class JoinGame extends JFrame {
                 return;
             }
             String userName = jTable.getValueAt(currRow, 0).toString();
-            // The delete query can be only executed by the user who created the game
-            if (userName.equals(currUser)) {
+            if (userName.equals(currUser)) { // The delete query can be only executed by the user who created the game
                 String gameName = jTable.getValueAt(currRow, 1).toString();
                 String creationDate = jTable.getValueAt(currRow, 8).toString();
                 System.out.println(creationDate);
                 if (gameController.deleteGame(gameName, creationDate)) {
                     JOptionPane.showMessageDialog(null, "Deleted Updated");
+                    // Clear the text fields.
                     gameNameTxt.setText("");
                     sportCategoryTxt.setText("");
                     countryTxt.setText("");
@@ -605,7 +609,7 @@ public class JoinGame extends JFrame {
         matchGamesTable.setModel(new DefaultTableModel());
     }
 
-    // Main Function
+    // Main Function.
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {

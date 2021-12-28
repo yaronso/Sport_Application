@@ -3,11 +3,9 @@ package Models;
 import java.io.Serializable;
 
 /**
- * Domain User model
+ * Domain User model, the following class represents the User object with its relevant fields.
  */
 public class User implements Serializable {
-
-    //private static final long serialVersionUID = 3789909326487155148L;
     private String firstName;
     private String lastName;
     private String userName;
@@ -15,7 +13,15 @@ public class User implements Serializable {
     private String email;
     private String mobile;
 
-    // Constructor
+    /**
+     * Class Constructor.
+     * @param firstName
+     * @param lastName
+     * @param userName
+     * @param password
+     * @param emailId
+     * @param mobileNumber
+     */
     public User(String firstName, String lastName, String userName, String password, String emailId, String mobileNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -26,10 +32,9 @@ public class User implements Serializable {
     }
 
 
-    public User() {
-    }
+    public User() {}
 
-
+    // Getters & Setters for each field of the class.
     public String getFirstName() {
         return firstName;
     }

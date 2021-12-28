@@ -17,7 +17,7 @@ import javax.swing.border.EmptyBorder;
 
 
 /**
- * User Registration using Swing.
+ * The following class handles the user Registration.
  */
 public class UserRegistration extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -29,8 +29,6 @@ public class UserRegistration extends JFrame {
     private JTextField email;
     private JTextField mob;
     private JButton btnNewButton;
-
-
 
     /**
      * Create the register frame.
@@ -142,7 +140,7 @@ public class UserRegistration extends JFrame {
 
         btnNewButton = new JButton("Register");
         btnNewButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) { // When the user click on the register button.
                 int rc = 0;
                 String firstName = firstname.getText();
                 String lastName = lastname.getText();
@@ -150,7 +148,7 @@ public class UserRegistration extends JFrame {
                 String userName = username.getText();
                 String mobileNumber = mob.getText();
                 String password = passwordField.getText();
-                if (PropertiesReaders.isAnyObjectNull(firstName, lastName, emailId, userName, password, mobileNumber)) {
+                if (PropertiesReaders.isAnyObjectNull(firstName, lastName, emailId, userName, password, mobileNumber)) { // verify that each input is not null.
                     JOptionPane.showMessageDialog(btnNewButton, "Please fill all the required fields.");
                     return;
                 }
@@ -158,11 +156,11 @@ public class UserRegistration extends JFrame {
                     JOptionPane.showMessageDialog(btnNewButton, "Enter a valid mobile number");
                     return;
                 }
-                User user = new User(firstName, lastName, userName, password, emailId, mobileNumber);
+                User user = new User(firstName, lastName, userName, password, emailId, mobileNumber); // create an instance of the user.
                 userList.add(String.valueOf(user));
                 // Insert the new input user to the DataBase
                 try {
-                    rc = userController.insertNewUser(user);
+                    rc = userController.insertNewUser(user); // Triggers the UserController in order to insert the new user details to the database.
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }

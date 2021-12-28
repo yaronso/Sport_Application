@@ -1,7 +1,6 @@
 package GUI;
 
 import Controllers.UserController;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -14,6 +13,9 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * The following class represents the user login window/page.
+ */
 public class UserLogin extends JFrame {
     private static final long serialVersionUID = 1L;
     private JTextField textField;
@@ -72,7 +74,7 @@ public class UserLogin extends JFrame {
         contentPane.add(btnNewButton);
         btnNewButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) { // When the user click on the register button.
                 UserRegistration registerFrame = null;
                 try {
                     registerFrame = new UserRegistration(userController);
@@ -88,14 +90,14 @@ public class UserLogin extends JFrame {
         btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 26));
         btnNewButton.setBounds(245, 392, 162, 73);
         btnNewButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e) { // When the user click on the login button.
                 String userName = textField.getText();
                 String password = passwordField.getText();
                 if (userName.equals("Admin") && password.equals("Admin")) { // Cheat for grader.
                     dispose();
                     UserHome userHome = null;
                     try {
-                        userHome = new UserHome(userName, userController);
+                        userHome = new UserHome(userName, userController); // Moving the user to the main page of the app (logged in as Admin).
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
                     }
@@ -104,9 +106,9 @@ public class UserLogin extends JFrame {
                     return;
                 }
                 try {
-                    if (userController.userLogin(userName, password)) {
+                    if (userController.userLogin(userName, password)) { // Verify the user exists in the relevant table in our database.
                         dispose();
-                        UserHome userHome = new UserHome(userName, userController);
+                        UserHome userHome = new UserHome(userName, userController); // Moving the user to the main page of the app.
                         userHome.setTitle("Welcome " + userName);
                         userHome.setVisible(true);
                     } else {

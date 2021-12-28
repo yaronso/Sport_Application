@@ -3,7 +3,7 @@ package Models;
 import java.io.Serializable;
 
 /**
- * Domain Game model
+ * Domain Game model, the following class represents the Game object with its relevant fields.
  */
 public class Game implements Serializable {
     private String gameName;
@@ -14,6 +14,16 @@ public class Game implements Serializable {
     private int numOfPlayers;
     private int levelOfPlayers;
 
+    /**
+     * Class Constructor.
+     * @param gameName
+     * @param sportCategory
+     * @param country
+     * @param city
+     * @param date
+     * @param numOfPlayers
+     * @param levelOfPlayers
+     */
     public Game(String gameName, String sportCategory, String country, String city, String date, int numOfPlayers, int levelOfPlayers) {
         this.gameName = gameName;
         this.sportCategory = sportCategory;
@@ -26,6 +36,7 @@ public class Game implements Serializable {
 
     public Game() {}
 
+    // Getters & Setters for each field of the class.
     public String getGameName() {
         return gameName;
     }

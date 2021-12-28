@@ -10,12 +10,19 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * The following class is the welcome window/page of our application.
+ */
 public class WelcomePage extends JFrame {
+    // Fields
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JButton btnNewButton;
     private JLabel label;
 
+    /**
+     * Create the Welcome Page frame.
+     */
     public WelcomePage() throws IOException {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 1014, 597);
@@ -31,6 +38,7 @@ public class WelcomePage extends JFrame {
         lblNewLabel.setBounds(420, 13, 273, 93);
         contentPane.add(lblNewLabel);
 
+        // When clicking on the Login/Register button the relevant window will open.
         btnNewButton = new JButton("Login/Register");
         btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 17));
         btnNewButton.setBounds(745, 392, 162, 73);

@@ -1,7 +1,6 @@
 package ClientServer;
 
 import GUI.*;
-
 import java.awt.*;
 import java.net.Socket;
 import java.io.IOException;
@@ -12,11 +11,19 @@ import java.io.IOException;
  **/
 public class WorkerRunnable implements Runnable {
     protected Socket clientSocket;
-    // CTR
+
+    /**
+     * Class Constructor.
+     * @param clientSocket
+     * @throws IOException
+     */
     public WorkerRunnable(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
     }
 
+    /**
+     * Overrides the function runnable as a part of implementing the interface Runnable.
+     */
     @Override
     public void run() {
         EventQueue.invokeLater(new Runnable() {

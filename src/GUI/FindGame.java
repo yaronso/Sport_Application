@@ -11,12 +11,17 @@ import java.io.IOException;
 import java.sql.SQLException;
 import Controllers.GameController;
 
+/**
+ * The following class represents FindGame window of our application. In the following window the user
+ * can find out relevant information about different existing games.
+ */
 public class FindGame extends JFrame {
     private static final long serialVersionUID = 1L;
 
     public FindGame() throws IOException {
         Init();
     }
+
 
     public void Init() throws IOException {
         // Initialization Objects:
@@ -77,12 +82,10 @@ public class FindGame extends JFrame {
         jLabelMostPlayedThisMonth.setForeground(Color.black);
         jLabelMostPlayedThisMonth.setBackground(Color.white);
         jLabelMostPlayedThisMonth.setOpaque(true);
-        jLabelMinAvgPlayersLeftInCountry.setText("Sport with minimum average players needed in: ");
+        jLabelMinAvgPlayersLeftInCountry.setText("Sport with minimum average players needed in country: ");
         jLabelMinAvgPlayersLeftInCountry.setForeground(Color.black);
         jLabelMinAvgPlayersLeftInCountry.setBackground(Color.white);
         jLabelMinAvgPlayersLeftInCountry.setOpaque(true);
-
-
 
         // JButtons:
         clearBtn = new JButton();
@@ -125,7 +128,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(findAccGameNameBtn, "Find Game Error: You must write the game name.");
                         return;
                     }
-                    dm = gameController.findByGameName(gameName);
+                    dm = gameController.findByGameName(gameName); // Find a game according a game name as input.
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -145,7 +148,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(findCityBtn, "Find City Error: You must write a city.");
                         return;
                     }
-                    dm = gameController.findByCityName(city);
+                    dm = gameController.findByCityName(city); // Find a game according a city as input.
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
@@ -165,7 +168,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(findCountryBtn, "Find Country Error: You must write a country.");
                         return;
                     }
-                    dm = gameController.findByCountryName(country);
+                    dm = gameController.findByCountryName(country); // Find a game according a country as input.
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }
@@ -186,13 +189,12 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(findMaxLevelBtn, "Find Max Level Error: You must write the game's category.");
                         return;
                     }
-                    dm = gameController.findMaxLevelGamesInEachCountry(max);
+                    dm = gameController.findMaxLevelGamesInEachCountry(max); // Find all the games with max level according an input sport category.
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }
                 jTable1.setModel(dm);
                 setViewTable(jScrollPane1, jTable1);
-                //setViewTable();
             }
         });
 
@@ -206,7 +208,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(countryMostPlayedBtn, "Most Played Category In Country Error: You must write the Sport Category.");
                         return;
                     }
-                    dm = gameController.findCountryMostPlayedSport(mostPlayedCountry);
+                    dm = gameController.findCountryMostPlayedSport(mostPlayedCountry); // Find out where a certain sport is most played.
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }
@@ -219,7 +221,7 @@ public class FindGame extends JFrame {
         mostPlayedSportOfMonthBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DefaultTableModel dm = null;
-                dm = gameController.findMostPlayedSportOfMonth();
+                dm = gameController.findMostPlayedSportOfMonth(); // Find the most played sport of the current month.
                 statisticsTable.setModel(dm);
                 setViewTable(jScrollPaneStatistics, statisticsTable);
             }
@@ -235,7 +237,7 @@ public class FindGame extends JFrame {
                         JOptionPane.showMessageDialog(minAvgPlayersBtn, "Minimum Average Players Needed In Country Error: You must write the Country.");
                         return;
                     }
-                    dm = gameController.findMinAvgPlayersLeftInCountry(mostPlayedCountry);
+                    dm = gameController.findMinAvgPlayersLeftInCountry(mostPlayedCountry); // Find the minimum average of required players in an input country.
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }
@@ -244,10 +246,9 @@ public class FindGame extends JFrame {
             }
         });
 
-        clearBtn.setText("Clear");
+        clearBtn.setText("Clear"); // Clear both tables content.
         clearBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                //setViewTable();
                 setViewTable(jScrollPane1, jTable1);
                 clearBtnActionPerformed(evt);
             }
@@ -268,31 +269,24 @@ public class FindGame extends JFrame {
                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                        .addGroup(GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
 
-                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(jLabelGameName)
-                                                                        .addComponent(jLabelFindGamesInCity))
-                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(jLabelGameName)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(gameNameTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(findAccGameNameBtn, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
 
-
-                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(gameNameTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
-                                                                        .addComponent(findGameCityTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
-                                                                        .addGap(18, 18, 18))
-
-                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(findAccGameNameBtn,  GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
-
-                                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                        .addComponent(findCityBtn,  GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
-
-                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addGap(21, 21, 21))
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(jLabelFindGamesInCity)
+                                                                .addGap(90, 90, 90)
+                                                                .addComponent(findGameCityTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
+                                                                .addGap(18, 18, 18)
+                                                                .addComponent(findCityBtn, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
 
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                 .addComponent(jLabelFindGamesCountry)
-                                                                .addGap(18, 18, 18)
+                                                                .addGap(66, 66, 66)
                                                                 .addComponent(countryTxt, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE)
                                                                 .addGap(18, 18, 18)
                                                                 .addComponent(findCountryBtn, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
