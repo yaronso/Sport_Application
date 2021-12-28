@@ -23,7 +23,10 @@ public class Database implements IDataBase {
     private static String DB_PASSWORD;
     private static String DB_NAME;
 
-    // CTR.
+    /**
+     * Class Constructor
+     * @throws IOException
+     */
     private Database() throws IOException {
         this.propertiesArray = Utils.PropertiesReaders.getJDBCProperties();
         DB_DRIVER = propertiesArray[0];
@@ -38,7 +41,12 @@ public class Database implements IDataBase {
         System.out.println(DB_NAME);
     }
 
-    // Implements the Singleton DP.
+    /**
+     * Implements the Singleton DP.
+     * @return database instance
+     * @throws SQLException
+     * @throws IOException
+     */
     public static Database getInstance() throws SQLException, IOException {
         if (instance == null) {
             instance = new Database();
@@ -48,13 +56,18 @@ public class Database implements IDataBase {
         return instance;
     }
 
-    // Returns the database connection.
+    /**
+     * Returns the database connection.
+     * @return database connection.
+     */
     private Connection getConnection() {
         return this.connection;
     }
 
-
-    // Getter for the DB connection for the main application class.
+    /**
+     * Getter for the DB connection for the main application class.
+     * @return database connection
+     */
     public Connection getDBConnection() {
         try {
             Class.forName(DB_DRIVER);
@@ -69,7 +82,10 @@ public class Database implements IDataBase {
         return connection;
     }
 
-    // The following function close the database connection.
+    /**
+     * The following function close the database connection.
+     * @param connection
+     */
     public void closeDBConnection(Connection connection) {
         if (connection != null) {
             try {
@@ -80,8 +96,10 @@ public class Database implements IDataBase {
         }
     }
 
-
-    // Set up the Database by triggering SQL scripts (create database, create tables).
+    /**
+     * Set up the Database by triggering SQL scripts (create database, create tables).
+     * @param db
+     */
     public void dataBaseConfig(Database db) {
         try {
             String CREATE_DB = "src/SqlUtils/createDB.sql";
@@ -107,7 +125,11 @@ public class Database implements IDataBase {
         }
     }
 
-    // The following function runs a SQL script which supplied as input path.
+    /**
+     * The following function runs a SQL script which supplied as input path.
+     * @param path
+     * @return
+     */
     @Override
     public int runSqlScript(String path) {
         String string;
@@ -141,7 +163,13 @@ public class Database implements IDataBase {
         return rc;
     }
 
-    // The following function trigger the flow of loading the CSV file (our dataset) to the relevant tables.
+    /**
+     * The following function trigger the flow of loading the CSV file (our dataset) to the relevant tables.
+     * @throws ScriptException
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws SQLException
+     */
     public void loadDataSet() throws ScriptException, IOException, InterruptedException, SQLException {
         if(isDataSetLoaded()) { // Check if the dataset was already loaded.
             System.out.println("The Data Set was already loaded to tables countries and cities.");
@@ -157,7 +185,11 @@ public class Database implements IDataBase {
         }
     }
 
-    // The following function check if the tables countries & cities were already fill up with the dataset.
+    /**
+     * The following function check if the tables countries & cities were already fill up with the dataset.
+     * @return
+     * @throws SQLException
+     */
     private boolean isDataSetLoaded() throws SQLException {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -184,8 +216,10 @@ public class Database implements IDataBase {
         }
     }
 
-
-    public void createCostumeCsv() throws ScriptException, IOException{
+    /**
+     * Triggering the python script in order to create a custom CSV with the relevant data from to whole input CSV dataset.
+     */
+    public void createCostumeCsv() {
         try {
             ProcessBuilder builder = new ProcessBuilder("python", System.getProperty("user.dir") + "\\src\\DataBase\\script.py" );
             Process process = builder.start();
@@ -204,6 +238,12 @@ public class Database implements IDataBase {
 
     }
 
+    /**
+     * Insert the retreived data from the loader python script to our database schema (tables countries & cities).
+     * @param insert_query
+     * @param file_path
+     * @param batchSize
+     */
     public void insertDb(String insert_query, String file_path, int batchSize) {
         Connection connection = null;
         try {
@@ -233,7 +273,6 @@ public class Database implements IDataBase {
             statement.executeBatch();
             connection.commit();
             connection.close();
-
         } catch (IOException ex) {
             System.err.println(ex);
         } catch (SQLException ex) {
