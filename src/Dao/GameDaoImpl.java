@@ -81,6 +81,16 @@ public class GameDaoImpl implements GameDao {
             "         ORDER BY unix_timestamp(t1.game_date)";
 
 
+    private static final String NO_SIGNED_PLAYERS_FOR_GAME = "SELECT distinct t1.user_name, t1.game_name, t1.sport_category, t3.country_name, t1.city, t1.game_date, t1.players, t1.level, t1.creation_date\n" +
+            "FROM game_details as t1\n" +
+            "JOIN cities as t2\n" +
+            "ON t1.city = t2.city_name\n" +
+            "JOIN countries as t3\n" +
+            "ON t2.country_id = t3.country_id\n" +
+            "WHERE t1.game_name not in (select game_name from match_games as t2\n" +
+            "WHERE t2.user_name != t2.participant or t2.participant != ?);";
+
+
 
     private static final String MAX_LEVEL_GROUP_BY_CATEGORY = "SELECT distinct t1.user_name, t1.game_name, t1.sport_category, t3.country_name, t1.city, t1.game_date, t1.players, t1.level, t1.creation_date\n" +
             "         FROM game_details as t1\n" +
@@ -225,6 +235,32 @@ public class GameDaoImpl implements GameDao {
             close(connection);
             close(Stmt);
         }
+    }
+
+    @Override
+    public DefaultTableModel findGameWithNoSignedPlayers(String userName) throws SQLException {
+        DefaultTableModel dm = buildDefaultTableModel();
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            connection = getConnection();
+            stmt = connection.prepareStatement(NO_SIGNED_PLAYERS_FOR_GAME);
+            stmt.setString(1, userName);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                dm.addRow(resultSetStrings(rs));
+            }
+            return dm;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(connection);
+            close(stmt);
+            assert rs != null;
+            rs.close();
+        }
+        return null;
     }
 
     /**

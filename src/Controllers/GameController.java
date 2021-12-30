@@ -67,6 +67,10 @@ public class GameController {
         return gameDao.findMinAvgPlayersLeftInCountry(Country);
     }
 
+    public DefaultTableModel findGameWithNoSignedPlayers(String userName) throws SQLException {
+        return gameDao.findGameWithNoSignedPlayers(userName);
+    }
+
     public boolean insertGameDetails(String userName, Game game) throws SQLException {
         return gameDao.insertGameDetails(userName, game);
     }

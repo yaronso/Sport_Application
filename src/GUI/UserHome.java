@@ -41,7 +41,7 @@ public class UserHome extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 FindGame findGame = null;
                 try {
-                    findGame = new FindGame(); // Opens the FindGame window.
+                    findGame = new FindGame(userName); // Opens the FindGame window.
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }

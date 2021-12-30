@@ -25,6 +25,7 @@ public interface GameDao {
     DefaultTableModel findMaxLevelGamesInEachCountry(String category) throws SQLException;
     DefaultTableModel findCountryMostPlayedSport(String sportCategory) throws SQLException;
     DefaultTableModel findMinAvgPlayersLeftInCountry(String Country) throws SQLException;
+    DefaultTableModel findGameWithNoSignedPlayers(String userName) throws SQLException;
     boolean insertGameDetails(String userName, Game game) throws SQLException;
     boolean checkIfMatchExists(String userName, String gameName, String creationDate, String participant) throws SQLException;
     boolean insertToMatchGameTableAndDownPlayers(String userName, String gameName, String creationDate, String participant, int i) throws SQLException;

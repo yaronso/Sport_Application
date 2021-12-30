@@ -18,12 +18,12 @@ import Controllers.GameController;
 public class FindGame extends JFrame {
     private static final long serialVersionUID = 1L;
 
-    public FindGame() throws IOException {
-        Init();
+    public FindGame(String userName) throws IOException {
+        Init(userName);
     }
 
 
-    public void Init() throws IOException {
+    public void Init(String userName) throws IOException {
         // Initialization Objects:
         GameController gameController = new GameController();
         jPanel1 = new JPanel();
@@ -53,6 +53,7 @@ public class FindGame extends JFrame {
         jLabelMostPlayedSportInCountrySuff = new JLabel();
         jLabelMostPlayedThisMonth = new JLabel();
         jLabelMinAvgPlayersLeftInCountry = new JLabel();
+        jLabelNoPlayersSignedForGame = new JLabel();
 
         jLabelGameName.setText("Find Game according game name:");
         jLabelGameName.setForeground(Color.black);
@@ -86,6 +87,10 @@ public class FindGame extends JFrame {
         jLabelMinAvgPlayersLeftInCountry.setForeground(Color.black);
         jLabelMinAvgPlayersLeftInCountry.setBackground(Color.white);
         jLabelMinAvgPlayersLeftInCountry.setOpaque(true);
+        jLabelNoPlayersSignedForGame.setText("Find Games With No Participants:");
+        jLabelNoPlayersSignedForGame.setForeground(Color.black);
+        jLabelNoPlayersSignedForGame.setBackground(Color.white);
+        jLabelNoPlayersSignedForGame.setOpaque(true);
 
         // JButtons:
         clearBtn = new JButton();
@@ -96,6 +101,7 @@ public class FindGame extends JFrame {
         countryMostPlayedBtn = new JButton();
         mostPlayedSportOfMonthBtn = new JButton();
         minAvgPlayersBtn = new JButton();
+        noPlayersSignedForGameBtn = new JButton();
 
 
         //setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -246,6 +252,22 @@ public class FindGame extends JFrame {
             }
         });
 
+        noPlayersSignedForGameBtn.setText("Find Games");
+        noPlayersSignedForGameBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DefaultTableModel dm = null;
+                try {
+                    dm = gameController.findGameWithNoSignedPlayers(userName);
+                } catch (SQLException exception) {
+                    exception.printStackTrace();
+                }
+                assert dm != null;
+                jTable1.setModel(dm);
+                setViewTable(jScrollPane1, jTable1);
+                //setViewTable();
+            }
+        });
+
         clearBtn.setText("Clear"); // Clear both tables content.
         clearBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -325,6 +347,11 @@ public class FindGame extends JFrame {
                                                                 .addComponent(minAvgPlayersBtn)
                                                                 .addGap(18, 18, 18))
 
+                                                        .addGroup(jPanel2Layout.createSequentialGroup()
+                                                                .addComponent(jLabelNoPlayersSignedForGame)
+                                                                .addGap(66, 66, 66)
+                                                                .addComponent(noPlayersSignedForGameBtn, GroupLayout.PREFERRED_SIZE, 126, GroupLayout.PREFERRED_SIZE))
+
 
                                                         .addGroup(jPanel2Layout.createSequentialGroup()
                                                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -391,6 +418,11 @@ public class FindGame extends JFrame {
                                                         .addComponent(jLabelMinAvgPlayersLeftInCountry)
                                                         .addComponent(minAvgPlayersInCountryText, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                                                         .addComponent(minAvgPlayersBtn)
+                                                        .addGap(51, 51, 51))
+
+                                                .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                        .addComponent(jLabelNoPlayersSignedForGame)
+                                                        .addComponent(noPlayersSignedForGameBtn)
                                                         .addGap(51, 51, 51))
 
                                                 .addGroup(jPanel2Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -468,6 +500,7 @@ public class FindGame extends JFrame {
     JLabel jLabelMostPlayedSportInCountrySuff;
     JLabel jLabelMostPlayedThisMonth;
     JLabel jLabelMinAvgPlayersLeftInCountry;
+    JLabel jLabelNoPlayersSignedForGame;
 
     // Text Fields declarations:
     JTextField gameNameTxt;
@@ -486,6 +519,7 @@ public class FindGame extends JFrame {
     JButton countryMostPlayedBtn;
     JButton mostPlayedSportOfMonthBtn;
     JButton minAvgPlayersBtn;
+    JButton noPlayersSignedForGameBtn;
 
     // etc
     JPanel jPanel1;
