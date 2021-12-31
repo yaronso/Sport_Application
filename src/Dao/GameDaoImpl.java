@@ -87,8 +87,8 @@ public class GameDaoImpl implements GameDao {
             "ON t1.city = t2.city_name\n" +
             "JOIN countries as t3\n" +
             "ON t2.country_id = t3.country_id\n" +
-            "WHERE t1.game_name not in (select game_name from match_games as t2\n" +
-            "WHERE t2.user_name != t2.participant or t2.participant != ?);";
+            "WHERE t1.game_name not in (SELECT t4.game_name from match_games as t4\n" +
+            "WHERE t4.user_name != t4.participant or t4.participant = ? or t4.user_name = ?);";
 
 
 
