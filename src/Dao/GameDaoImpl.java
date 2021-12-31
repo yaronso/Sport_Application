@@ -237,6 +237,12 @@ public class GameDaoImpl implements GameDao {
         }
     }
 
+    /**
+     * The following function represent to the user all the games that have no assigned users to them self.
+     * @param userName
+     * @return DefaultTableModel.
+     * @throws SQLException
+     */
     @Override
     public DefaultTableModel findGameWithNoSignedPlayers(String userName) throws SQLException {
         DefaultTableModel dm = buildDefaultTableModel();
@@ -247,6 +253,8 @@ public class GameDaoImpl implements GameDao {
             connection = getConnection();
             stmt = connection.prepareStatement(NO_SIGNED_PLAYERS_FOR_GAME);
             stmt.setString(1, userName);
+            stmt.setString(2, userName);
+            System.out.println(stmt);
             rs = stmt.executeQuery();
             while (rs.next()) {
                 dm.addRow(resultSetStrings(rs));
