@@ -6,3 +6,5 @@ Each user that register to the application can create, join, delete or update a 
 Moreover, the registered users have to ability to search for specific games & find out facts about the worldwide games statistics by using different filtering queries.
 
 The application allocates a new thread to each client.
+
+The source code is inside the directory: src.
