@@ -8,3 +8,6 @@ Moreover, the registered users have to ability to search for specific games & fi
 The application allocates a new thread to each client.
 
 The source code is inside the directory: src.
+
+Application Server Side: Backend Server written in Java with a connection to MySQL Database.
+Application Client Side: Used Java Swing for the UI (Desktop Application).
